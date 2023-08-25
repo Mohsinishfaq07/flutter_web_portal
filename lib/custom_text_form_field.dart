@@ -25,7 +25,7 @@ class CustomTextFormField extends StatefulWidget {
       required this.controller,
         required this.allowNumbersOnly,
       this.hintText = "Input here",
-      this.height = 55,
+      this.height = 50,
       this.width = double.infinity,
       this.prefixIcon,
       this.suffixIcon,
@@ -57,9 +57,6 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       child: TextFormField(
         inputFormatters:  widget.allowNumbersOnly    ? [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))]
         : null,
-
-
-
         textInputAction: widget.textInputAction,
         onTap: widget.ontapped,
         obscureText: widget.obsecure,
@@ -75,7 +72,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         decoration: InputDecoration(
             hintText: widget.hintText,
             contentPadding:
-                widget.contentPadding ?? EdgeInsets.symmetric(vertical: 15),
+                widget.contentPadding ?? const EdgeInsets.symmetric(vertical: 15,horizontal: 15),
             hintStyle: AppTheme.subtitle1
                 .copyWith(fontSize: 15, fontWeight: FontWeight.normal),
             prefixIcon: widget.prefixIcon,

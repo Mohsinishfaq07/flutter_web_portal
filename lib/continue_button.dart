@@ -18,15 +18,20 @@ class ContinueButton extends StatelessWidget {
     return GestureDetector(
       onTap: ontap,
       child: SizedBox(
-        height: 50,
         width: width ?? double.infinity,
-        child: Container(
+        child: Container(height: 50,
           decoration: AppTheme.roundedContainerDecoration
               .copyWith(color: AppTheme.primaryColor),
           alignment: Alignment.center,
-          child: Text(
-            text,
-            style: const TextStyle(color: Colors.white, fontSize: 20),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              text,
+              style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ),

@@ -552,10 +552,13 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:provider/provider.dart';
 import '../../../app_theme.dart';
 import '../../../app_url.dart';
+import '../manager/dashboard_provider.dart';
 import '../widgets/routes.dart';
 import 'assets_statistics.dart';
+import 'dashboard_page.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -567,16 +570,12 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   List<Map<String, dynamic>> assets = [];
   bool isLoading = false;
-  @override
-  void initState() {
-    super.initState();
-    getFirstFloorAssets();
-  }
+
 
   Future<void> getFirstFloorAssets() async {
     try {
       Dio dio = Dio();
-      var url =AppUrl.history;
+      var url = AppUrl.baseUrl+AppUrl.history;
       // var url = 'http://192.168.4.139:3000/asset/location/Ais-F1';
       var response = await dio.get(url);
       if (response.statusCode == 200) {
@@ -602,13 +601,33 @@ class _HistoryScreenState extends State<HistoryScreen> {
       print('Error fetching data: $e');
     }
   }
+  DashboardProvider? dashboardProvider ;
+
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getFirstFloorAssets();
+
+
+
+
+    });}
+  @override
+  void dispose() {
+    print("asdfghjkl");
+    dashboardProvider!.removePage();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    dashboardProvider??= Provider.of<DashboardProvider>(context);
+
     return Container(
-      color:Colors.grey.shade600,
-      child: Padding(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),        color: AppTheme.scaffoldBackgroundColor,
+      ),      child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
           child: Column(

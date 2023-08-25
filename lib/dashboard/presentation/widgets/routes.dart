@@ -1,17 +1,20 @@
- class Routes {
+ class    Routes {
   static const dashboard = "/dashboard";
-  static const assignedEmployees = "/assigned.employees";
-  static const unAssignedEmployees = "/un.assigned.employees";
-  static const unAssignedAssets = "/un.assigned.assets";
-  static const assetsStatistics = "/assets.Statistics";
-  static const firstFloorAsset = "/first.floor.asset";
-  static const allAsset = "/all.asset";
-  static const secondFloorAsset = "/second.floor.asset";
-  static const assignAssetsToEmployees = "/assign.asset.to.employees";
-  static const addAssets = "/add.asset";
-  static const unAssignAssets = "/un-assign_asset";
+  static const assignedEmployees = "/assigned_employees";
+  static const unAssignedEmployees = "/un_assigned_employees";
+  static const unAssignedAssets = "/un_assigned_assets";
+  static const assetsStatistics = "/assets_statistics";
+  static const firstFloorAsset = "/first_floor_asset";
+  static const allAsset = "/all_asset";
+  static const secondFloorAsset = "/second_floor_asset";
+  static const assignAssetsToEmployees = "/assign_asset_to_employees";
+  static const addAssets = "/add_asset";
+  static const unAssignAssets = "/un_assign_asset";
   static const login = "/login";
-  static const adminPage = "/admin.page";
+  static const adminPage = "/admin_page";
   static const deleteAsset = "/delete_asset";
   static const history = "/history";
+  static const scrapAssets = "/scrap_assets";
+  static const createScrap = "/create_scrap";
+  static const scrapRecovered = "/scrap_recovered";
 }

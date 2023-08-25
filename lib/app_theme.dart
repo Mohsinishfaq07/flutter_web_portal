@@ -18,7 +18,7 @@ class AppTheme {
       boxShadow: const [
         BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(2, 3))
       ],
-      borderRadius: BorderRadius.circular(15),
+      borderRadius: BorderRadius.circular(30),
       color: canvasColor);
 
   static BoxDecoration primaryButtonDecoration = BoxDecoration(

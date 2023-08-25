@@ -1,15 +1,15 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:web_portal/app_theme.dart';
 import 'package:web_portal/continue_button.dart';
 import '../../../app_assets.dart';
-import '../../../app_url.dart';
 import '../../../colors.dart';
 import '../../../custom_text_form_field.dart';
-import '../../../dashboard/presentation/pages/responsive.dart';
-import '../../../dashboard/presentation/widgets/routes.dart';
 import 'package:http/http.dart' as http;
+import '../../../dashboard/presentation/widgets/routes.dart';
 import '../../../text_dec.dart';
+import '../manager/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -21,224 +21,296 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // static final GlobalKey<FormState> _loginScreenFormKey =
-  //     GlobalKey<FormState>();
-  // final TextEditingController loginEmailController = TextEditingController();
-  // final TextEditingController loginPasswordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  static final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _webLoginFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _tabLoginFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _mobileLoginFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    // return ChangeNotifierProvider.value(value: authProvider,child:
-    Size _size = MediaQuery.of(context).size;
-    return Responsive(
-      webView: LoginWeb(
-          size: _size,
-          loginFormKey: _loginFormKey,
-          emailController: emailController,
-          passwordController: passwordController),
-      tabView: LoginWeb(
-          size: _size,
-          loginFormKey: _loginFormKey,
-          emailController: emailController,
-          passwordController: passwordController),
-      mobileView: LoginMobileScreen(
-        loginEmailController: emailController,
-        loginPasswordController: passwordController,
-        loginScreenFormKey: _loginFormKey,
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    Size size = MediaQuery.of(context).size;
+    return Scaffold(
+      body: AnimatedContainer(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        alignment: Alignment.topLeft,
+        duration: const Duration(milliseconds: 200),
+        child: ResponsiveBuilder(
+          builder: (context, sizingInformation) {
+            if (sizingInformation.isMobile) {
+              return LoginMobile(
+                loginFormKey: _mobileLoginFormKey,
+                emailController: emailController,
+                passwordController: passwordController,
+                authProvider: authProvider,
+              );
+            } else if (sizingInformation.isTablet) {
+              return LoginTab(
+                size: size,
+                loginFormKey: _tabLoginFormKey,
+                emailController: emailController,
+                passwordController: passwordController,
+                authProvider: authProvider,
+              );
+            } else {
+              return LoginWeb(
+                size: size,
+                loginFormKey: _webLoginFormKey,
+                emailController: emailController,
+                passwordController: passwordController,
+                authProvider: authProvider,
+              );
+            }
+          },
+        ),
       ),
     );
   }
 }
 
-class LoginWeb extends StatelessWidget {
+class LoginWeb extends StatefulWidget {
   const LoginWeb({
     super.key,
     required Size size,
     required GlobalKey<FormState> loginFormKey,
     required this.emailController,
     required this.passwordController,
-  })  : _size = size,
-        _loginFormKey = loginFormKey;
+    required AuthProvider authProvider,
+  }) : _webLoginFormKey = loginFormKey;
 
-  final Size _size;
-  final GlobalKey<FormState> _loginFormKey;
+  final GlobalKey<FormState> _webLoginFormKey;
   final TextEditingController emailController;
   final TextEditingController passwordController;
-  void loginUser(context) async {
-    String url = AppUrl.baseUrl + AppUrl.login;
 
-    // var url = "http://192.168.4.139:3000/api/admin/login";
-    var data = {
-      "email": emailController.text,
-      "password": passwordController.text
-    };
-    var bodyy = json.encode(data);
-    var urlParse = Uri.parse(url);
+  @override
+  State<LoginWeb> createState() => _LoginWebState();
+}
 
-    try {
-      // Dio dio = Dio();
-      http.Response response = await http.post(urlParse,
-          body: bodyy, headers: {"Content-Type": "application/json"});
-      //  var response = await dio.post(url, data: bodyy, options: Options(
-      //      method: "post",
-      //      contentType: "application/json",responseType: ResponseType.json));
-
-      if (response.statusCode == 200) {
-        // Successful response
-        var responseData = json.decode(response.body);
-        // Process the responseData here...
-        print(response.statusCode);
-        print('Login successful!');
-        print('Response data: $responseData');
-        Navigator.pushReplacementNamed(context, Routes.adminPage);
-      } else {
-        // Error handling for failed response status code
-        print('Request failed with status: ${response.statusCode}');
-        // Show appropriate message to the user
-        if (response.statusCode == 401) {
-          // Unauthorized, invalid credentials
-          print('Invalid credentials. Please try again.');
-        } else {
-          // Handle other error scenarios...
-          print('Something went wrong. Please try again later.');
-        }
-      }
-    } catch (e) {
-      // Error handling for network issues or other exceptions
-      print('Error: $e');
-      print('Network error. Please check your internet connection.');
-    }
+class _LoginWebState extends State<LoginWeb> {
+  AuthProvider authProvider = AuthProvider();
+  String _userName = 'not getting';
+  String get userName => _userName;
+  set userName(String name) {
+    _userName = name;
   }
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
+      backgroundColor: AppTheme.scaffoldBackgroundColor,
+      body: SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: textDesc(context),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.of(context).size.height / 12,
-                  ),
-                  child: Container(
-                    height: _size.width > 200 ? 480 : 200,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppTheme.primaryColor),
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.grey.shade200,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Hello, Admin",
-                            style: TextStyle(
-                              fontSize: 50,
-                              color: primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
+            Padding(
+              padding: const EdgeInsets.all(60.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.grey),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      textDesc(context),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: MediaQuery.of(context).size.height / 8,
+                        ),
+                        child: Container(
+                          // height: widget._size.width > 1000 ? 600 : 800,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppTheme.primaryColor),
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.grey.shade600,
                           ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          const Text(
-                            "Please Login Your Account",
-                            style: TextStyle(
-                              fontSize: 25,
-                              color: Colors.black54,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.4,
-                            child: Form(
-                              key: _loginFormKey,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 30),
-                                  TextFormField(
-                                    controller: emailController,
-                                    decoration: InputDecoration(
-                                      hintText: "Email",
-                                      suffixIcon: Icon(
-                                        Icons.alternate_email,
-                                        color: AppTheme.primaryColor,
-                                      ),
-                                      prefixIcon: Icon(
-                                        Icons.email_outlined,
-                                        color: AppTheme.primaryColor,
-                                      ),
-                                    ),
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Please enter an email';
-                                      }
-                                      // You can add more validation logic here
-                                      return null;
-                                    },
-                                  ),
-                                  const SizedBox(height: 40),
-                                  TextFormField(
-                                    controller: passwordController,
-                                    decoration: InputDecoration(
-                                      hintText: "password",
-                                      suffixIcon: Icon(
-                                        Icons.remove_red_eye_outlined,
-                                        color: AppTheme.primaryColor,
-                                      ),
-                                      prefixIcon: Icon(
-                                        Icons.lock_outline_rounded,
-                                        color: AppTheme.primaryColor,
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: Colors.grey.shade700),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                        "Welcome Back",
+                                        style: TextStyle(
+                                          fontSize: 40,
+                                          color: primaryColor,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Please enter a password';
-                                      }
-                                      // You can add more validation logic here
-                                      return null;
-                                    },
                                   ),
-                                  const SizedBox(height: 40),
-                                  ContinueButton(
-                                    text: "Login",
-                                    ontap: () {
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: Colors.grey),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                        "Please Login Your Account",
+                                        style: TextStyle(
+                                          fontSize: 26,
+                                          color: Colors.black45,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Form(
+                                    key: widget._webLoginFormKey,
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            CustomTextFormField(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.3,
+                                              hintText: "Your Email",
+                                              controller:
+                                                  authProvider.emailController,
+                                              allowNumbersOnly: false,
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Please enter an email';
+                                                }
+                                                // You can add more validation logic here
+                                                return null;
+                                              },
+                                              suffixIcon: Icon(
+                                                Icons.alternate_email,
+                                                color: AppTheme.primaryColor,
+                                              ),
+                                              prefixIcon: Icon(
+                                                Icons.email_outlined,
+                                                color: AppTheme.primaryColor,
+                                              ),
+                                              textInputAction:
+                                                  TextInputAction.next,
+                                            ),
+                                            const SizedBox(height: 20),
+                                            CustomTextFormField(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.3,
+                                              isPassword: true,
+                                              hintText: "Your Password",
+                                              controller: authProvider
+                                                  .passwordController,
+                                              allowNumbersOnly: false,
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Please enter Your Password';
+                                                }
+                                                // You can add more validation logic here
+                                                return null;
+                                              },
+                                              suffixIcon: Icon(
+                                                Icons.alternate_email,
+                                                color: AppTheme.primaryColor,
+                                              ),
+                                              prefixIcon: Icon(
+                                                Icons.lock_outline_rounded,
+                                                color: AppTheme.primaryColor,
+                                              ),
+                                              textInputAction:
+                                                  TextInputAction.next,
+                                            ),
+                                            const SizedBox(height: 20),
+                                            ContinueButton(
+                                              width: 300,
+                                              text: "Login",
+                                              ontap: () async {
 
-                                      // Navigator.pushReplacementNamed(context, Routes.adminPage);
-                                      if (_loginFormKey.currentState!
-                                          .validate()) {
-                                        loginUser(context);
-                                       }
-                                      // Navigator.pushReplacementNamed(context, Routes.adminPage);
+                                                print("butoon clicked ");
+                                                if (widget._webLoginFormKey
+                                                    .currentState!
+                                                    .validate()) {
+                                                  final authProvider =
+                                                      Provider.of<AuthProvider>(
+                                                          context,
+                                                          listen: false);
+                                                  await authProvider.loginUser(
+                                                      context,
+                                                      widget
+                                                          .emailController.text.trim(),
+                                                      widget.passwordController
+                                                          .text);
+                                                  print("if is working ");
 
-                                    },
+
+                                                }
+                                              },
+
+                                              // Navigator.pushReplacementNamed(context, Routes.adminPage);
+                                            ),
+                                            // ContinueButton(
+                                            //   width: 300,
+                                            //   text: "Login",
+                                            //   ontap: () async {
+                                            //     if (widget._webLoginFormKey.currentState!.validate()) {
+                                            //       final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                                            //       final   loginResult = await authProvider.loginUser(
+                                            //         context,
+                                            //         widget.emailController.text,
+                                            //         widget.passwordController.text,
+                                            //       );
+                                            //
+                                            //       if (loginResult) {
+                                            //         final snackBar = SnackBar(
+                                            //           content: Text(
+                                            //             "Successfully logged in as ${authProvider.userName}",
+                                            //             style: const TextStyle(
+                                            //               color: Colors.blue,
+                                            //               fontWeight: FontWeight.bold,
+                                            //             ),
+                                            //           ),
+                                            //           backgroundColor: AppTheme.primaryColor,
+                                            //         );
+                                            //         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                            //       } else {
+                                            //         const snackBar = SnackBar(
+                                            //           content: Text(
+                                            //             "Login unsuccessful. Please check your credentials.",
+                                            //             style: TextStyle(
+                                            //               color: Colors.red,
+                                            //               fontWeight: FontWeight.bold,
+                                            //             ),
+                                            //           ),
+                                            //           backgroundColor: Colors.black87,
+                                            //         );
+                                            //         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                            //       }
+                                            //     }
+                                            //   },
+                                            // )
+
+                                          ]),
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-              ],
+                    ]),
+              ),
             ),
           ],
         ),
@@ -248,20 +320,193 @@ class LoginWeb extends StatelessWidget {
   }
 }
 
-class LoginMobileScreen extends StatelessWidget {
-  const LoginMobileScreen({
-    required GlobalKey<FormState> loginScreenFormKey,
-    required this.loginEmailController,
-    required this.loginPasswordController,
-  }) : _loginScreenFormKey = loginScreenFormKey;
+class LoginTab extends StatefulWidget {
+  const LoginTab({
+    super.key,
+    required Size size,
+    required GlobalKey<FormState> loginFormKey,
+    required this.emailController,
+    required this.passwordController,
+    required AuthProvider authProvider,
+  })  : _size = size,
+        _tabLoginFormKey = loginFormKey;
 
-  final GlobalKey<FormState> _loginScreenFormKey;
-  final TextEditingController loginEmailController;
-  final TextEditingController loginPasswordController;
+  final Size _size;
+  final GlobalKey<FormState> _tabLoginFormKey;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+
+  @override
+  State<LoginTab> createState() => _LoginTabState();
+}
+
+class _LoginTabState extends State<LoginTab> {
+  String responseMessage = 'empty';
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+    return Scaffold(
+      backgroundColor: AppTheme.scaffoldBackgroundColor,
+      body: Padding(
+        padding: const EdgeInsets.all(30),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 22, bottom: 5),
+                child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.18,
+                    child: Image.asset(
+                      AppAssets.aislogo,
+                      color: Colors.white,
+                      fit: BoxFit.contain,
+                    )),
+              ),
+              Text(
+                'Welcome Back!',
+                style: AppTheme.heading1
+                    .copyWith(color: AppTheme.primaryColor, fontSize: 25),
+              ),
+              const Text(
+                'Please login to your account',
+                style: TextStyle(color: Colors.grey, fontSize: 18),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              Form(
+                  key: widget._tabLoginFormKey,
+                  child: Column(
+                    children: [
+                      CustomTextFormField(
+                        textInputAction: TextInputAction.next,
+                        width: double.infinity,
+                        hintText: "Email",
+                        onChanged: (value) {},
+                        suffixIcon: Icon(
+                          Icons.alternate_email,
+                          color: AppTheme.primaryColor,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
+                          color: AppTheme.primaryColor,
+                        ),
+                        controller: authProvider.emailController,
+                        allowNumbersOnly: false,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter Your Email';
+                          }
+                          // You can add more validation logic here
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 28),
+                      CustomTextFormField(
+                        textInputAction: TextInputAction.next,
+                        width: double.infinity,
+                        hintText: "Password",
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter Your Password';
+                          }
+                          // You can add more validation logic here
+                          return null;
+                        },
+                        isPassword: true,
+                        obsecure: true,
+                        prefixIcon: Icon(
+                          Icons.lock_outline_rounded,
+                          color: AppTheme.primaryColor,
+                        ),
+                        controller: authProvider.passwordController,
+                        allowNumbersOnly: false,
+                      ),
+                    ],
+                  )),
+              const SizedBox(
+                height: 20,
+              ),
+              GestureDetector(
+                onTap: () async {
+                  if (widget._tabLoginFormKey.currentState!.validate()) {
+                    final authProvider =
+                        Provider.of<AuthProvider>(context, listen: false);
+                    await authProvider.loginUser(
+                        context,
+                        widget.emailController.text,
+                        widget.passwordController.text);
+
+                    final snackBar = SnackBar(
+                      content: Text(
+                        "Successfully logged in as ${authProvider.userName}",
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      backgroundColor: AppTheme
+                          .primaryColor, // Customize the background color
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                },
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Container(
+                    height: 50,
+                    decoration: AppTheme.roundedContainerDecoration
+                        .copyWith(color: AppTheme.primaryColor),
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Login",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: MediaQuery.of(context).size.width * 0.028,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LoginMobile extends StatefulWidget {
+  const LoginMobile({
+    super.key,
+    required GlobalKey<FormState> loginFormKey,
+    required this.emailController,
+    required this.passwordController,
+    required AuthProvider authProvider,
+  }) : _mobileLoginFormKey = loginFormKey;
+
+  final GlobalKey<FormState> _mobileLoginFormKey;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+
+  @override
+  State<LoginMobile> createState() => _LoginMobileState();
+}
+
+class _LoginMobileState extends State<LoginMobile> {
+  String responseMessage = "";
+
+  bool isExpanded = false;
+  String selectedOption = "Select Your Role";
+
+  @override
+  Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       backgroundColor: AppTheme.scaffoldBackgroundColor,
@@ -273,7 +518,7 @@ class LoginMobileScreen extends StatelessWidget {
               children: [
                 // const FlutterLogo(size: 20,),
                 Padding(
-                  padding: const EdgeInsets.only(top: 22, bottom: 25),
+                  padding: const EdgeInsets.only(top: 22, bottom: 5),
                   child: SizedBox(
                       height: MediaQuery.of(context).size.height * 0.13,
                       child: Image.asset(
@@ -287,36 +532,18 @@ class LoginMobileScreen extends StatelessWidget {
                   style: AppTheme.heading1
                       .copyWith(color: AppTheme.primaryColor, fontSize: 25),
                 ),
-                Text(
+                const Text(
                   'Please login to your account',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: _size.width > 1200
-                        ? 260
-                        : _size.width > 1000
-                            ? 240
-                            : _size.width > 900
-                                ? 220
-                                : _size.width > 800
-                                    ? 200
-                                    : _size.width > 750
-                                        ? 180
-                                        : _size.width > 700
-                                            ? 160
-                                            : _size.width > 650
-                                                ? 140
-                                                : 0,
-                  ),
+                  style: TextStyle(color: Colors.grey, fontSize: 18),
                 ),
                 const SizedBox(
-                  height: 80,
+                  height: 20,
                 ),
                 Form(
-                    key: _loginScreenFormKey,
+                    key: widget._mobileLoginFormKey,
                     child: Column(
                       children: [
                         CustomTextFormField(
-                          allowNumbersOnly: false,
                           textInputAction: TextInputAction.next,
                           width: double.infinity,
                           hintText: "Email",
@@ -329,62 +556,136 @@ class LoginMobileScreen extends StatelessWidget {
                             Icons.email_outlined,
                             color: AppTheme.primaryColor,
                           ),
-                          controller: loginEmailController,
-                          validator: (value) {},
+                          controller: authProvider.emailController,
+                          allowNumbersOnly: false,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter Your Email';
+                            }
+                            // You can add more validation logic here
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 28),
                         CustomTextFormField(
-                          allowNumbersOnly: false,
                           textInputAction: TextInputAction.done,
                           width: double.infinity,
                           hintText: "Password",
-                          onChanged: (value) {},
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter Your Password';
+                            }
+                            // You can add more validation logic here
+                            return null;
+                          },
                           isPassword: true,
                           obsecure: true,
                           prefixIcon: Icon(
                             Icons.lock_outline_rounded,
                             color: AppTheme.primaryColor,
                           ),
-                          controller: loginPasswordController,
-                          validator: (value) {},
+                          controller: authProvider.passwordController,
+                          allowNumbersOnly: false,
                         ),
                       ],
                     )),
-                Padding(
-                  padding: EdgeInsets.only(top: 10, bottom: 45),
-                  child: GestureDetector(
-                    onTap: () async {},
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 180),
-                      child: Text(
-                        "Forgot Password?",
-                        style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 12,
-                            color: Colors.orange),
+                const SizedBox(
+                  height: 20,
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    if (widget._mobileLoginFormKey.currentState!.validate()) {
+                      final authProvider =
+                          Provider.of<AuthProvider>(context, listen: false);
+                      await authProvider.loginUser(
+                          context,
+                          widget.emailController.text,
+                          widget.passwordController.text);
+
+                      final snackBar = SnackBar(
+                        content: Text(
+                          "Successfully logged in as ${authProvider.userName}",
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        backgroundColor: AppTheme
+                            .primaryColor, // Customize the background color
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                    // Navigator.pushReplacementNamed(context, Routes.adminPage);
+                  },
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Container(
+                      height: 50,
+                      decoration: AppTheme.roundedContainerDecoration
+                          .copyWith(color: AppTheme.primaryColor),
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Login",
+                          style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.04,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ),
                 ),
-                ContinueButton(
-                  text: "Login",
-                  ontap: () {
-                    // String username = loginEmailController.text;
-                    debugPrint('on tapped');
-                    Navigator.pushReplacementNamed(context, Routes.adminPage);
-
-                    // authController.login(loginEmailController.text,
-                    //     loginPasswordController.text);
-                    // String username = loginEmailController.text;
-                    // authController.login(username, loginPasswordController.text
-                  },
-                )
               ],
             ),
           ),
         ),
       ),
     );
+  }
+}
+
+class ThemeModel {
+  final ValueNotifier<bool> isDarkTheme = ValueNotifier(false);
+
+  Color getTextColor({bool inverted = false}) {
+    return isDarkTheme.value
+        ? (inverted ? Colors.blue : Colors.red)
+        : (inverted ? Colors.blue : Colors.red);
+  }
+
+  Color getBackgroundColor({bool inverted = false}) {
+    return isDarkTheme.value
+        ? (inverted ? Colors.blue : Colors.red)
+        : (inverted ? Colors.blue : Colors.red);
+  }
+
+  Color getIconColor({bool inverted = false}) {
+    return isDarkTheme.value
+        ? (inverted ? Colors.blue : Colors.red)
+        : (inverted ? Colors.blue : Colors.red);
+  }
+
+  Color getLeftSideBarColor({bool inverted = false}) {
+    return isDarkTheme.value
+        ? (inverted ? Colors.blue : Colors.red)
+        : (inverted ? Colors.blue : Colors.red);
+  }
+
+  void toggleTheme() {
+    isDarkTheme.value = !isDarkTheme.value;
+  }
+}
+
+class ThemeProvider extends ChangeNotifier {
+  final ThemeModel _themeModel = ThemeModel();
+
+  bool get isDarkTheme => _themeModel.isDarkTheme.value;
+
+  void toggleTheme() {
+    _themeModel.toggleTheme();
+    notifyListeners();
   }
 }

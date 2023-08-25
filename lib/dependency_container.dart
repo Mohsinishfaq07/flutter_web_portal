@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get_it/get_it.dart';
+ import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import 'authentication/data/data_sources/auth_data_source.dart';
@@ -14,11 +12,11 @@ import 'dashboard/presentation/widgets/local_navigator.dart';
 import 'globals.dart';
 import 'network.info.dart';
 
-final sl = GetIt.instance;
+// final sl = GetIt.instance;
 
 Future<void> init() async {
   /// Providers
-  sl.registerLazySingleton(() => AuthProvider(sl()));
+  sl.registerLazySingleton(() => AuthProvider());
 
   /// UseCases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -41,7 +39,7 @@ Future<void> init() async {
 
   sl.registerLazySingleton(() => Dio());
 
-  Get.put(LocalNavigator());
+  // Get.put(LocalNavigator());
 
 
   //

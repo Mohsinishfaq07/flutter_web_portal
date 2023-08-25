@@ -12,7 +12,7 @@ Column textDesc(BuildContext context) {
     children: [
       SizedBox(
           height:  _size.width > 1200
-              ? 260
+              ? 320
               : _size.width > 1000
               ? 240
               : _size.width > 900
@@ -29,10 +29,8 @@ Column textDesc(BuildContext context) {
 
         // height: _size.width > 1300 ? 200:50,
           child: Image.asset("assets/images/png/ic_ais_logo.png")),
-
-
        const SizedBox(
-        height: 20,
+        height: 10,
       ),
        Text(
         'Seat Management System',
@@ -56,35 +54,32 @@ Column textDesc(BuildContext context) {
           fontWeight: FontWeight.bold,
         ),
       ),
-      const SizedBox(
-        height: 10,
-      ),
-       Row(
-        children: [
-          Text(
-            "Very Simple & Fast Tracking Solution For Your Company",
-            style: TextStyle(
-              color:  Colors.black  ,
-              fontSize: _size.width > 1200
-                  ? 22
-                  : _size.width > 1000
-                  ? 20
-                  : _size.width > 900
-                  ? 18
-                  : _size.width > 800
-                  ? 16
-                  : _size.width > 750
-                  ? 14
-                  : _size.width > 700
-                  ? 12
-                  : _size.width > 650
-                  ? 10
-                  : 0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
+      // const SizedBox(
+      //   height: 6,
+      // ),
+       Text(
+         "Very Simple & Fast Tracking Solution "
+             "For Your Company",
+         style: TextStyle(
+           color:  Colors.grey.shade800  ,
+           fontSize: _size.width > 1200
+               ? 20
+               : _size.width > 1000
+               ? 18
+               : _size.width > 900
+               ? 16
+               : _size.width > 800
+               ? 14
+               : _size.width > 750
+               ? 12
+               : _size.width > 700
+               ? 10
+               : _size.width > 650
+               ? 8
+               : 0,
+           fontWeight: FontWeight.bold,
+         ),
+       ),
     ],
   );
 }

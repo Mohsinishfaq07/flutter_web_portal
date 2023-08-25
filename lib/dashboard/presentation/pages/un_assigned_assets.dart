@@ -576,7 +576,7 @@ class _UnAssignedAssetsState extends State<UnAssignedAssets> {
   Future<void> getUnAssignedAssets() async {
     try {
       Dio dio = Dio();
-      var url =AppUrl.baseUrl+AppUrl.unAssignedAsset;
+      var url = AppUrl.baseUrl + AppUrl.unAssignedAsset;
       // var url = 'http://192.168.4.139:3000/asset/location/Ais-F1';
       var response = await dio.get(url);
       if (response.statusCode == 200) {
@@ -608,129 +608,27 @@ class _UnAssignedAssetsState extends State<UnAssignedAssets> {
     Size _size = MediaQuery.of(context).size;
 
     return Container(
-      color:Colors.grey.shade600,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),        color: AppTheme.scaffoldBackgroundColor,
+      ),        child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomHeading(title: 'Un-Assigned Assets Statistics',showBackButton: true),
-              GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, Routes.assignAssetsToEmployees);
-                  },
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                        height: MediaQuery.of(context).size.height * 0.08,
-                        width: MediaQuery.of(context).size.width * 0.12,
-                        decoration: BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceAround,
-                            children: [
-                              Text("Assign Assets" ,style: TextStyle(
-                                fontSize: _size.width > 1400
-                                    ? 18
-                                    : _size.width > 1350
-                                    ? 16
-                                    : _size.width > 1300
-                                    ? 15
-                                    : _size.width > 1250
-                                    ? 14
-                                    : _size.width > 1200
-                                    ? 13
-                                    : _size.width > 1150
-                                    ? 12
-                                    : _size.width > 1100
-                                    ? 11
-                                    : _size.width > 1050
-                                    ? 10
-                                    : _size.width > 1000
-                                    ? 9
-                                    : _size.width > 950
-                                    ? 8
-                                    : _size.width > 900
-                                    ? 7
-                                    : _size.width > 850
-                                    ? 6
-                                    : _size.width > 800
-                                    ? 6
-                                    : _size.width > 750
-                                    ? 6
-                                    : _size.width > 700
-                                    ? 6
-                                    : _size.width > 650
-                                    ? 6
-                                    : _size.width > 600
-                                    ? 6
-                                    : _size.width > 550
-                                    ? 6
-                                    : _size.width > 500
-                                    ? 6
-                                    : _size.width > 450
-                                    ? 6
-                                    : _size.width > 400
-                                    ? 6
-                                    : _size.width > 350
-                                    ? 6
-                                    : 6 ,
+              const CustomHeading(
+                  title: 'Un-Assigned Assets Statistics', showBackButton: true),
+              const SizedBox(
+                height: 10,
+              ),
 
-                              )),
-                              Icon(Icons.add,size:  _size.width > 1400
-                                  ? 17
-                                  : _size.width > 1350
-                                  ? 16
-                                  : _size.width > 1300
-                                  ? 15
-                                  : _size.width > 1250
-                                  ? 14
-                                  : _size.width > 1200
-                                  ? 14
-                                  : _size.width > 1150
-                                  ? 14
-                                  : _size.width > 1100
-                                  ? 14
-                                  : _size.width > 1050
-                                  ? 14
-                                  : _size.width > 1000
-                                  ? 14
-                                  : _size.width > 950
-                                  ? 14
-                                  : _size.width > 900
-                                  ? 14
-                                  : _size.width > 850
-                                  ? 14
-                                  : _size.width > 800
-                                  ? 14
-                                  : _size.width > 750
-                                  ? 14
-                                  : _size.width > 700
-                                  ? 14
-                                  : _size.width > 650
-                                  ? 14
-                                  : _size.width > 600
-                                  ? 14
-                                  : _size.width > 550
-                                  ? 6
-                                  : _size.width > 500
-                                  ? 6
-                                  : _size.width > 450
-                                  ? 6
-                                  : _size.width > 400
-                                  ? 6
-                                  : _size.width > 350
-                                  ? 6
-                                  : 6 ,),
-                            ],
-                          ),
-                        )),
-                  )),
+              OrangeButton(
+                size: _size,
+                title: 'Assign Asset',
+                ontap: () {
+                  Navigator.pushReplacementNamed(
+                      context, Routes.assignAssetsToEmployees);
+                },
+              ),
               const SizedBox(
                 height: 10,
               ),
@@ -742,7 +640,6 @@ class _UnAssignedAssetsState extends State<UnAssignedAssets> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: DataTable(
-
                     columnSpacing: MediaQuery.of(context).size.width * 0.11,
                     columns: [
                       DataColumn(
@@ -786,39 +683,58 @@ class _UnAssignedAssetsState extends State<UnAssignedAssets> {
                           ],
                         ),
                       ),
-
-                    ],
-                    rows: assets.map((asset){
-                      return DataRow(
-                        cells: [
-                          DataCell(
+                      DataColumn(
+                        label: Row(
+                          children: [
                             Text(
-                              asset['serial_no']?.toString() ?? 'N/A',
-                              style: TextStyle(color: Colors.white),
+                              "Location",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.primaryColor),
                             ),
-                          ),
-                          DataCell(
+                            const Icon(Icons.location_on_outlined),
+                          ],
+                        ),
+                      ),
+                    ],
+                    rows: assets.map(
+                      (asset) {
+                        return DataRow(
+                          cells: [
+                            DataCell(
                               Text(
-                                asset['id']?.toString() ?? 'N/A',
+                                asset['serial_no']?.toString() ?? 'N/A',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              showEditIcon: true),
-                          DataCell(
-                            Text(
-                              asset['asset_name']?.toString() ?? 'N/A',
-                              style: TextStyle(color: Colors.white),
                             ),
-                          ),
-                          DataCell(
-                            Text(asset["type_name"]?.toString() ?? 'N/A',
-                              style: TextStyle(color: Colors.white),
+                            DataCell(
+                                Text(
+                                  asset['id']?.toString() ?? 'N/A',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                showEditIcon: true),
+                            DataCell(
+                              Text(
+                                asset['asset_name']?.toString() ?? 'N/A',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
-
-                          ),
-
-                        ],
-                      );
-                    },).toList(),
+                            DataCell(
+                              Text(
+                                asset["type_name"]?.toString() ?? 'N/A',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                asset["floor_location"]?.toString() ?? 'N/A',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ).toList(),
                   ),
                 ),
               ),
@@ -863,6 +779,99 @@ class _UnAssignedAssetsState extends State<UnAssignedAssets> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class OrangeButton extends StatelessWidget {
+  OrangeButton({
+    super.key,
+    required Size size,
+    required this.title,
+    required this.ontap,
+  }) : _size = size;
+
+  final Size _size;
+  final String title;
+  Function() ontap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+          onTap: ontap,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+                height: MediaQuery.of(context).size.height * 0.08,
+                width: 150,
+                decoration: BoxDecoration(
+                    color: AppTheme.primaryColor,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(title,
+                          style: const TextStyle(
+                            fontSize: 16)),
+                      Icon(
+                        Icons.add,
+                        size: _size.width > 1400
+                            ? 17
+                            : _size.width > 1350
+                                ? 16
+                                : _size.width > 1300
+                                    ? 15
+                                    : _size.width > 1250
+                                        ? 14
+                                        : _size.width > 1200
+                                            ? 14
+                                            : _size.width > 1150
+                                                ? 14
+                                                : _size.width > 1100
+                                                    ? 14
+                                                    : _size.width > 1050
+                                                        ? 14
+                                                        : _size.width > 1000
+                                                            ? 14
+                                                            : _size.width > 950
+                                                                ? 14
+                                                                : _size.width >
+                                                                        900
+                                                                    ? 14
+                                                                    : _size.width >
+                                                                            850
+                                                                        ? 14
+                                                                        : _size.width >
+                                                                                800
+                                                                            ? 14
+                                                                            : _size.width > 750
+                                                                                ? 14
+                                                                                : _size.width > 700
+                                                                                    ? 14
+                                                                                    : _size.width > 650
+                                                                                        ? 14
+                                                                                        : _size.width > 600
+                                                                                            ? 14
+                                                                                            : _size.width > 550
+                                                                                                ? 16
+                                                                                                : _size.width > 500
+                                                                                                    ? 16
+                                                                                                    : _size.width > 450
+                                                                                                        ? 16
+                                                                                                        : _size.width > 400
+                                                                                                            ? 16
+                                                                                                            : _size.width > 350
+                                                                                                                ? 16
+                                                                                                                : 16,
+                      ),
+                    ],
+                  ),
+                )),
+          )),
     );
   }
 }

@@ -1,4 +1,6 @@
-
-import 'local_navigator.dart';
-
-LocalNavigator localNavigator = LocalNavigator.instence;
+//
+//
+//
+// import 'local_navigator.dart';
+//
+// LocalNavigator localNavigator = LocalNavigator.instance;

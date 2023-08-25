@@ -1,6 +1,10 @@
-import 'package:flutter/material.dart';
-import '../../../colors.dart';
+ import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:web_portal/app_theme.dart';
+ import '../../../colors.dart';
+import '../manager/dashboard_provider.dart';
 import '../widgets/controllers_instances.dart';
+import '../widgets/local_navigator.dart';
 import '../widgets/routes.dart';
 import 'dashboard_page.dart';
 
@@ -14,585 +18,233 @@ class AssetsStatistics extends StatefulWidget {
 class _AssetsStatisticsState extends State<AssetsStatistics> {
   int isHovering = 0;
   int selectedOption = 0;
+  DashboardProvider? dashboardProvider ;
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      dashboardProvider!.getAllAssetsCount();
+          dashboardProvider!.getAllUnAssignedAssetsCount();
+      dashboardProvider!.getFloorOneAssetsCount();
+      dashboardProvider!.getFloorTwoAssetsCount();
 
-  }
+
+    });}
+
+
+ @override
+ void dispose() {
+    print("asdfghjkl");
+   dashboardProvider!.removePage();
+   super.dispose();
+ }
+
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    dashboardProvider??= Provider.of<DashboardProvider>(context);
+
+
 
     return Container(
-      color: Colors
-          .grey.shade600, // color: const Color(0xFF23BCBA).withOpacity(0.09),
-      child: SingleChildScrollView(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),        color: AppTheme.scaffoldBackgroundColor,
+      ),      child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const CustomHeading(
                   title: 'Asset Statistics', showBackButton: true),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.white10,
-                      border: Border.all(color: Colors.grey)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        MouseRegion(
-                          onEnter: (event) {
-                            setState(() {
-                              isHovering = 1;
-                              selectedOption = 1;
-                            });
-                          },
-                          onExit: (event) {
-                            setState(() {
-                              isHovering = 0;
-                              selectedOption = 0;
-                            });
-                          },
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedOption=0;
-                              });
-                              localNavigator.navigateTo(Routes.allAsset);
-                            },
-                            child: Container(
-                                height: _size.width > 1000
-                                    ? 150
-                                    : _size.width > 900
-                                        ? 145
-                                        : _size.width > 850
-                                            ? 140
-                                            : _size.width > 800
-                                                ? 135
-                                                : _size.width > 750
-                                                    ? 130
-                                                    : _size.width > 700
-                                                        ? 125
-                                                        : _size.width > 650
-                                                            ? 120
-                                                            : 100,
-                                width: _size.width > 1450
-                                    ? 380
-                                    : _size.width > 1400
-                                        ? 300
-                                        : _size.width > 1350
-                                            ? 280
-                                            : _size.width > 1300
-                                                ? 270
-                                                : _size.width > 1250
-                                                    ? 260
-                                                    : _size.width > 1200
-                                                        ? 250
-                                                        : _size.width > 1150
-                                                            ? 240
-                                                            : _size.width > 1100
-                                                                ? 230
-                                                                : _size.width > 1050
-                                                                    ? 220
-                                                                    : _size.width >
-                                                                            1000
-                                                                        ? 210
-                                                                        : _size.width >
-                                                                                950
-                                                                            ? 200
-                                                                            : _size.width >
-                                                                                    900
-                                                                                ? 190
-                                                                                : _size.width > 850
-                                                                                    ? 180
-                                                                                    : _size.width > 800
-                                                                                        ? 170
-                                                                                        : _size.width > 750
-                                                                                            ? 160
-                                                                                            : _size.width > 700
-                                                                                                ? 150
-                                                                                                : _size.width > 650
-                                                                                                    ? 140
-                                                                                                    : _size.width > 600
-                                                                                                        ? 130
-                                                                                                        : _size.width > 550
-                                                                                                            ? 115
-                                                                                                            : _size.width > 500
-                                                                                                                ? 105
-                                                                                                                : _size.width > 450
-                                                                                                                    ? 100
-                                                                                                                    : _size.width > 300
-                                                                                                                        ? 90
-                                                                                                                        : 80,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: primaryColor), color: selectedOption == 1? primaryColor : Colors.grey.shade600),
-                                margin: const EdgeInsets.symmetric(horizontal: 15),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 20,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text("All Assets",
-                                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                            fontSize: _size.width > 1400
-                                                ? 27
-                                                : _size.width > 1350
-                                                    ? 26
-                                                    : _size.width > 1300
-                                                        ? 25
-                                                        : _size.width > 1250
-                                                            ? 24
-                                                            : _size.width > 1200
-                                                                ? 23
-                                                                : _size.width > 1150
-                                                                    ? 22
-                                                                    : _size.width > 1100
-                                                                        ? 21
-                                                                        : _size.width > 1050
-                                                                            ? 20
-                                                                            : _size.width > 1000
-                                                                                ? 19
-                                                                                : _size.width > 950
-                                                                                    ? 18
-                                                                                    : _size.width > 900
-                                                                                        ? 17
-                                                                                        : _size.width > 850
-                                                                                            ? 16
-                                                                                            : _size.width > 800
-                                                                                                ? 15
-                                                                                                : _size.width > 750
-                                                                                                    ? 14
-                                                                                                    : _size.width > 700
-                                                                                                        ? 13
-                                                                                                        : _size.width > 650
-                                                                                                            ? 12
-                                                                                                            : _size.width > 600
-                                                                                                                ? 11
-                                                                                                                : _size.width > 550
-                                                                                                                    ? 10
-                                                                                                                    : _size.width > 500
-                                                                                                                        ? 9
-                                                                                                                        : _size.width > 450
-                                                                                                                            ? 8
-                                                                                                                            : _size.width > 400
-                                                                                                                                ? 7
-                                                                                                                                : _size.width > 350
-                                                                                                                                    ? 6
-                                                                                                                                    : 5,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white)),
-                                  ],
-                                )),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        alignment: Alignment.centerLeft,
+                        // height: MediaQuery.of(context).size.height * 0.26,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.white10,
+                            border: Border.all(color: Colors.white10)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            children: [
+                              Consumer<DashboardProvider>(
+                                builder: (BuildContext context, value,
+                                    Widget? child) {
+                                  return MouseRegion(
+                                    opaque: true,
+                                    onEnter: (event) {
+                                      setState(() {
+                                        isHovering = 1;
+                                        selectedOption = 1;
+                                      });
+                                    },
+                                    onExit: (event) {
+                                      setState(() {
+                                        isHovering = 0;
+                                        selectedOption = 0;
+                                      });
+                                    },
+                                    child: CustomDashboardContainer(
+                                         title: 'All Assets Statistics',
+                                        quantity: context
+                                            .read<DashboardProvider>()
+                                            .allAssetsCount,
+                                        ontap: () {
+                                          setState(() {
+                                            selectedOption = 1;
+                                          });
+                                          localNavigator
+                                              .navigateTo(Routes.allAsset);
+                                        },
+                                        color: selectedOption == 1
+                                            ? primaryColor
+                                            : Colors.grey.shade600),
+                                  );
+                                },
+                              ),
+                              Consumer<DashboardProvider>(
+                                builder: (BuildContext context, value,
+                                    Widget? child) {
+                                  return MouseRegion(
+                                    opaque: true,
+                                    onEnter: (event) {
+                                      setState(() {
+                                        isHovering = 2;
+                                        selectedOption = 2;
+                                      });
+                                    },
+                                    onExit: (event) {
+                                      setState(() {
+                                        isHovering = 0;
+                                        selectedOption = 0;
+                                      });
+                                    },
+                                    child: CustomDashboardContainer(
+                                         title: 'Un-Assigned Assets',
+                                        quantity: context
+                                            .read<DashboardProvider>()
+                                            .allUnAssignedAssetsCount,
+                                        ontap: () {
+                                          setState(() {
+                                            selectedOption = 2;
+                                          });
+                                          localNavigator.navigateTo(
+                                              Routes.unAssignedAssets);
+                                        },
+                                        color: selectedOption == 2
+                                            ? primaryColor
+                                            : Colors.grey.shade600),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            localNavigator.navigateTo(Routes.unAssignedAssets);
-                          },
-                          child: Container(
-                              height: _size.width > 1000
-                                  ? 150
-                                  : _size.width > 900
-                                      ? 145
-                                      : _size.width > 850
-                                          ? 140
-                                          : _size.width > 800
-                                              ? 135
-                                              : _size.width > 750
-                                                  ? 130
-                                                  : _size.width > 700
-                                                      ? 125
-                                                      : _size.width > 650
-                                                          ? 120
-                                                          : 100,
-                              width: _size.width > 1450
-                                  ? 380
-                                  : _size.width > 1400
-                                      ? 300
-                                      : _size.width > 1350
-                                          ? 280
-                                          : _size.width > 1300
-                                              ? 270
-                                              : _size.width > 1250
-                                                  ? 260
-                                                  : _size.width > 1200
-                                                      ? 250
-                                                      : _size.width > 1150
-                                                          ? 240
-                                                          : _size.width > 1100
-                                                              ? 230
-                                                              : _size.width > 1050
-                                                                  ? 220
-                                                                  : _size.width >
-                                                                          1000
-                                                                      ? 210
-                                                                      : _size.width >
-                                                                              950
-                                                                          ? 200
-                                                                          : _size.width >
-                                                                                  900
-                                                                              ? 190
-                                                                              : _size.width > 850
-                                                                                  ? 180
-                                                                                  : _size.width > 800
-                                                                                      ? 170
-                                                                                      : _size.width > 750
-                                                                                          ? 160
-                                                                                          : _size.width > 700
-                                                                                              ? 150
-                                                                                              : _size.width > 650
-                                                                                                  ? 140
-                                                                                                  : _size.width > 600
-                                                                                                      ? 130
-                                                                                                      : _size.width > 550
-                                                                                                          ? 115
-                                                                                                          : _size.width > 500
-                                                                                                              ? 105
-                                                                                                              : _size.width > 450
-                                                                                                                  ? 100
-                                                                                                                  : _size.width > 300
-                                                                                                                      ? 90
-                                                                                                                      : 80,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: primaryColor), color: Colors.grey.shade600),
-                              margin: const EdgeInsets.symmetric(horizontal: 0),
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 20,
-                              ),
-                              child: Column(
-                                children: [
-                                  Text("Un Assigned assets ",
-                                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                          fontSize: _size.width > 1400
-                                              ? 27
-                                              : _size.width > 1350
-                                                  ? 26
-                                                  : _size.width > 1300
-                                                      ? 25
-                                                      : _size.width > 1250
-                                                          ? 24
-                                                          : _size.width > 1200
-                                                              ? 23
-                                                              : _size.width > 1150
-                                                                  ? 22
-                                                                  : _size.width > 1100
-                                                                      ? 21
-                                                                      : _size.width > 1050
-                                                                          ? 20
-                                                                          : _size.width > 1000
-                                                                              ? 19
-                                                                              : _size.width > 950
-                                                                                  ? 18
-                                                                                  : _size.width > 900
-                                                                                      ? 17
-                                                                                      : _size.width > 850
-                                                                                          ? 16
-                                                                                          : _size.width > 800
-                                                                                              ? 15
-                                                                                              : _size.width > 750
-                                                                                                  ? 14
-                                                                                                  : _size.width > 700
-                                                                                                      ? 13
-                                                                                                      : _size.width > 650
-                                                                                                          ? 12
-                                                                                                          : _size.width > 600
-                                                                                                              ? 11
-                                                                                                              : _size.width > 550
-                                                                                                                  ? 10
-                                                                                                                  : _size.width > 500
-                                                                                                                      ? 9
-                                                                                                                      : _size.width > 450
-                                                                                                                          ? 8
-                                                                                                                          : _size.width > 400
-                                                                                                                              ? 7
-                                                                                                                              : _size.width > 350
-                                                                                                                                  ? 6
-                                                                                                                                  : 5,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white)),
-                                ],
-                              )),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
               const CustomHeading(
                   title: 'Floors Asset Statistics', showBackButton: false),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.white10,
-                      border: Border.all(color: Colors.grey)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(13.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            localNavigator.navigateTo(Routes.firstFloorAsset);
-                          },
-                          child: Container(
-                              height: _size.width > 1000
-                                  ? 150
-                                  : _size.width > 900
-                                      ? 145
-                                      : _size.width > 850
-                                          ? 140
-                                          : _size.width > 800
-                                              ? 135
-                                              : _size.width > 750
-                                                  ? 130
-                                                  : _size.width > 700
-                                                      ? 125
-                                                      : _size.width > 650
-                                                          ? 120
-                                                          : 100,
-                              width: _size.width > 1450
-                                  ? 380
-                                  : _size.width > 1400
-                                      ? 300
-                                      : _size.width > 1350
-                                          ? 280
-                                          : _size.width > 1300
-                                              ? 270
-                                              : _size.width > 1250
-                                                  ? 260
-                                                  : _size.width > 1200
-                                                      ? 250
-                                                      : _size.width > 1150
-                                                          ? 240
-                                                          : _size.width > 1100
-                                                              ? 230
-                                                              : _size.width > 1050
-                                                                  ? 220
-                                                                  : _size.width >
-                                                                          1000
-                                                                      ? 210
-                                                                      : _size.width >
-                                                                              950
-                                                                          ? 200
-                                                                          : _size.width >
-                                                                                  900
-                                                                              ? 190
-                                                                              : _size.width > 850
-                                                                                  ? 180
-                                                                                  : _size.width > 800
-                                                                                      ? 170
-                                                                                      : _size.width > 750
-                                                                                          ? 160
-                                                                                          : _size.width > 700
-                                                                                              ? 150
-                                                                                              : _size.width > 650
-                                                                                                  ? 140
-                                                                                                  : _size.width > 600
-                                                                                                      ? 130
-                                                                                                      : _size.width > 550
-                                                                                                          ? 115
-                                                                                                          : _size.width > 500
-                                                                                                              ? 105
-                                                                                                              : _size.width > 450
-                                                                                                                  ? 100
-                                                                                                                  : _size.width > 300
-                                                                                                                      ? 90
-                                                                                                                      : 80,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: primaryColor), color: Colors.grey.shade600),
-                              margin: const EdgeInsets.symmetric(horizontal: 15),
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 20,
-                              ),
-                              child: Column(
-                                children: [
-                                  Text("First Floor",
-                                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                          fontSize: _size.width > 1400
-                                              ? 27
-                                              : _size.width > 1350
-                                                  ? 26
-                                                  : _size.width > 1300
-                                                      ? 25
-                                                      : _size.width > 1250
-                                                          ? 24
-                                                          : _size.width > 1200
-                                                              ? 23
-                                                              : _size.width > 1150
-                                                                  ? 22
-                                                                  : _size.width > 1100
-                                                                      ? 21
-                                                                      : _size.width > 1050
-                                                                          ? 20
-                                                                          : _size.width > 1000
-                                                                              ? 19
-                                                                              : _size.width > 950
-                                                                                  ? 18
-                                                                                  : _size.width > 900
-                                                                                      ? 17
-                                                                                      : _size.width > 850
-                                                                                          ? 16
-                                                                                          : _size.width > 800
-                                                                                              ? 15
-                                                                                              : _size.width > 750
-                                                                                                  ? 14
-                                                                                                  : _size.width > 700
-                                                                                                      ? 13
-                                                                                                      : _size.width > 650
-                                                                                                          ? 12
-                                                                                                          : _size.width > 600
-                                                                                                              ? 11
-                                                                                                              : _size.width > 550
-                                                                                                                  ? 10
-                                                                                                                  : _size.width > 500
-                                                                                                                      ? 9
-                                                                                                                      : _size.width > 450
-                                                                                                                          ? 8
-                                                                                                                          : _size.width > 400
-                                                                                                                              ? 7
-                                                                                                                              : _size.width > 350
-                                                                                                                                  ? 6
-                                                                                                                                  : 5,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white)),
-                                ],
-                              )),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        alignment: Alignment.centerLeft,
+                        // height: MediaQuery.of(context).size.height * 0.26,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.white10,
+                            border: Border.all(color: Colors.white10)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            children: [
+                              Consumer<DashboardProvider>(builder:
+                                  (BuildContext context, value, Widget? child) {
+                                return MouseRegion(
+                                  opaque: true,
+                                  onEnter: (event) {
+                                    setState(() {
+                                      isHovering = 3;
+                                      selectedOption = 3;
+                                    });
+                                  },
+                                  onExit: (event) {
+                                    setState(() {
+                                      isHovering = 0;
+                                      selectedOption = 0;
+                                    });
+                                  },
+                                  child: CustomDashboardContainer(
+                                       title: 'First Floor Assets',
+                                      quantity: context
+                                          .read<DashboardProvider>()
+                                          .firstFloorAssetsCount,
+                                      ontap: () {
+                                        setState(() {
+                                          selectedOption = 3;
+                                        });
+                                        localNavigator
+                                            .navigateTo(Routes.firstFloorAsset);
+                                      },
+                                      color: selectedOption == 3
+                                          ? primaryColor
+                                          : Colors.grey.shade600),
+                                );
+                              }),
+                              Consumer<DashboardProvider>(builder:
+                                  (BuildContext context, value, Widget? child) {
+                                return MouseRegion(
+                                  opaque: true,
+                                  onEnter: (event) {
+                                    setState(() {
+                                      isHovering = 4;
+                                      selectedOption = 4;
+                                    });
+                                  },
+                                  onExit: (event) {
+                                    setState(() {
+                                      isHovering = 0;
+                                      selectedOption = 0;
+                                    });
+                                  },
+                                  child: CustomDashboardContainer(
+                                       title: 'Second Floor Assets ',
+                                      quantity: context
+                                          .read<DashboardProvider>()
+                                          .secondFloorAssetsCount,
+                                      ontap: () {
+                                        setState(() {
+                                          selectedOption = 4;
+                                        });
+                                        localNavigator.navigateTo(
+                                            Routes.secondFloorAsset);
+                                      },
+                                      color: selectedOption == 4
+                                          ? primaryColor
+                                          : Colors.grey.shade600),
+                                );
+                              }),
+                            ],
+                          ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            localNavigator.navigateTo(Routes.secondFloorAsset);
-                          },
-                          child: Container(
-                              height: _size.width > 1000
-                                  ? 150
-                                  : _size.width > 900
-                                      ? 145
-                                      : _size.width > 850
-                                          ? 140
-                                          : _size.width > 800
-                                              ? 135
-                                              : _size.width > 750
-                                                  ? 130
-                                                  : _size.width > 700
-                                                      ? 125
-                                                      : _size.width > 650
-                                                          ? 120
-                                                          : 100,
-                              width: _size.width > 1450
-                                  ? 380
-                                  : _size.width > 1400
-                                      ? 300
-                                      : _size.width > 1350
-                                          ? 280
-                                          : _size.width > 1300
-                                              ? 270
-                                              : _size.width > 1250
-                                                  ? 260
-                                                  : _size.width > 1200
-                                                      ? 250
-                                                      : _size.width > 1150
-                                                          ? 240
-                                                          : _size.width > 1100
-                                                              ? 230
-                                                              : _size.width > 1050
-                                                                  ? 220
-                                                                  : _size.width >
-                                                                          1000
-                                                                      ? 210
-                                                                      : _size.width >
-                                                                              950
-                                                                          ? 200
-                                                                          : _size.width >
-                                                                                  900
-                                                                              ? 190
-                                                                              : _size.width > 850
-                                                                                  ? 180
-                                                                                  : _size.width > 800
-                                                                                      ? 170
-                                                                                      : _size.width > 750
-                                                                                          ? 160
-                                                                                          : _size.width > 700
-                                                                                              ? 150
-                                                                                              : _size.width > 650
-                                                                                                  ? 140
-                                                                                                  : _size.width > 600
-                                                                                                      ? 130
-                                                                                                      : _size.width > 550
-                                                                                                          ? 115
-                                                                                                          : _size.width > 500
-                                                                                                              ? 105
-                                                                                                              : _size.width > 450
-                                                                                                                  ? 100
-                                                                                                                  : _size.width > 300
-                                                                                                                      ? 90
-                                                                                                                      : 80,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: primaryColor), color: Colors.grey.shade600),
-                              margin: const EdgeInsets.symmetric(horizontal: 0),
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 20,
-                              ),
-                              child: Column(
-                                children: [
-                                  Text("Second Floor ",
-                                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                          fontSize: _size.width > 1400
-                                              ? 27
-                                              : _size.width > 1350
-                                                  ? 26
-                                                  : _size.width > 1300
-                                                      ? 25
-                                                      : _size.width > 1250
-                                                          ? 24
-                                                          : _size.width > 1200
-                                                              ? 23
-                                                              : _size.width > 1150
-                                                                  ? 22
-                                                                  : _size.width > 1100
-                                                                      ? 21
-                                                                      : _size.width > 1050
-                                                                          ? 20
-                                                                          : _size.width > 1000
-                                                                              ? 19
-                                                                              : _size.width > 950
-                                                                                  ? 18
-                                                                                  : _size.width > 900
-                                                                                      ? 17
-                                                                                      : _size.width > 850
-                                                                                          ? 16
-                                                                                          : _size.width > 800
-                                                                                              ? 15
-                                                                                              : _size.width > 750
-                                                                                                  ? 14
-                                                                                                  : _size.width > 700
-                                                                                                      ? 13
-                                                                                                      : _size.width > 650
-                                                                                                          ? 12
-                                                                                                          : _size.width > 600
-                                                                                                              ? 11
-                                                                                                              : _size.width > 550
-                                                                                                                  ? 10
-                                                                                                                  : _size.width > 500
-                                                                                                                      ? 9
-                                                                                                                      : _size.width > 450
-                                                                                                                          ? 8
-                                                                                                                          : _size.width > 400
-                                                                                                                              ? 7
-                                                                                                                              : _size.width > 350
-                                                                                                                                  ? 6
-                                                                                                                                  : 5,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white)),
-                                ],
-                              )),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ],
@@ -614,48 +266,27 @@ class CustomHeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        if (showBackButton)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white10),
-              child: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Icon(Icons.arrow_back, color: primaryColor),
-                  )),
-            ),
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          if (showBackButton)
+            InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Icon(Icons.arrow_back, color: Colors.white,size: 20,)),
+          if (showBackButton)
+            SizedBox(width: MediaQuery.of(context).size.width * 0.02),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                fontSize: 22,fontWeight: FontWeight.bold,
+                color: Colors.white),
           ),
-        if (showBackButton)
-          SizedBox(width: MediaQuery.of(context).size.width * 0.2),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.white10,
-              // border: Border.all(color: primaryColor)
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Text(
-                title,
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: primaryColor),
-              ),
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

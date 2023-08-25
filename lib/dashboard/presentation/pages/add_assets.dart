@@ -1,17 +1,16 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:web_portal/app_url.dart';
 import '../../../app_theme.dart';
-import '../../../colors.dart';
 import '../../../continue_button.dart';
 import '../../../custom_text_form_field.dart';
+import '../manager/dashboard_provider.dart';
 import '../widgets/routes.dart';
 import 'package:http/http.dart' as http;
 
 import 'assets_statistics.dart';
+import 'dashboard_page.dart';
 
 class AddAssets extends StatefulWidget {
   const AddAssets({super.key});
@@ -20,13 +19,9 @@ class AddAssets extends StatefulWidget {
 }
 
 class _AddAssetsState extends State<AddAssets> {
-  TextEditingController assetIdController = TextEditingController();
   TextEditingController assetNameController = TextEditingController();
   TextEditingController assetTypeController = TextEditingController();
-  TextEditingController statusController = TextEditingController();
   TextEditingController locationController = TextEditingController();
-  TextEditingController assignDateController = TextEditingController();
-  TextEditingController dropDownController = TextEditingController();
   bool isExpanded = false;
   bool isExpanded2 = false;
   int selectedfloor = 0;
@@ -43,6 +38,23 @@ class _AddAssetsState extends State<AddAssets> {
     "Ais-Floor-1": 1,
     "Ais-Floor-2": 2,
   };
+  DashboardProvider? dashboardProvider ;
+
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+
+
+
+    });}
+  @override
+  void dispose() {
+    print("asdfghjkl");
+    dashboardProvider!.removePage();
+    super.dispose();
+  }
   Future<void> createAsset() async {
     var url = AppUrl.baseUrl + AppUrl.createAsset;
     var data = {
@@ -116,34 +128,39 @@ class _AddAssetsState extends State<AddAssets> {
     // }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    dashboardProvider??= Provider.of<DashboardProvider>(context);
+
+    Size size = MediaQuery.of(context).size;
 
     return Container(
-      decoration: BoxDecoration(color: Colors.grey.shade600),
-      child: SingleChildScrollView(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),        color: AppTheme.scaffoldBackgroundColor,
+      ),      child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
               SingleChildScrollView(
                 child: Center(
                   child: Column(
                     children: [
-                      const CustomHeading(title: 'Add Assets', showBackButton: true),
-                      SizedBox(
-                        height: 10,
+                      const CustomHeading(
+                          title: 'Add Assets', showBackButton: true),
+                      const SizedBox(
+                        height: 20,
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           LayoutBuilder(
                             builder: (BuildContext context,
                                 BoxConstraints constraints) {
                               double imageWidth = constraints.maxWidth;
                               return Visibility(
-                                visible: imageWidth != 700,
+                                visible: imageWidth != 1000,
                                 child: Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
@@ -152,18 +169,18 @@ class _AddAssetsState extends State<AddAssets> {
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(12),
-                                            color: Colors.white10),
-                                        height: _size.width > 1200
+                                            color: Colors.grey),
+                                        height: size.width > 1200
                                             ? 260
-                                            : _size.width > 1000
+                                            : size.width > 1000
                                                 ? 240
-                                                : _size.width > 900
+                                                : size.width > 900
                                                     ? 220
-                                                    : _size.width > 800
+                                                    : size.width > 800
                                                         ? 200
-                                                        : _size.width > 750
+                                                        : size.width > 750
                                                             ? 180
-                                                            : _size.width > 700
+                                                            : size.width > 700
                                                                 ? 160
                                                                 : 0,
 
@@ -180,12 +197,15 @@ class _AddAssetsState extends State<AddAssets> {
                           ),
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
                               child: Container(
+                                width: MediaQuery.of(context).size.width * 0.4,
+
                                 decoration: BoxDecoration(
                                     border: Border.all(color: Colors.white10),
                                     borderRadius: BorderRadius.circular(12),
-                                    color: Colors.white10),
+                                    color: Colors.grey),
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
@@ -213,14 +233,19 @@ class _AddAssetsState extends State<AddAssets> {
                                         Container(
                                           // width: double.infinity,
                                           decoration: BoxDecoration(
-                                            border: Border.all(),
-                                            color: Colors.amber,
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            color: Colors.grey,
+                                            border: Border.all(color: Colors.grey.shade100)
                                           ),
                                           child: SingleChildScrollView(
                                             child: Column(
                                               children: [
                                                 ListTile(
                                                   title: const Text("Chair"),
+                                                  leading: const Icon(
+                                                    Icons.add_box_rounded,
+                                                  ),
                                                   onTap: () {
                                                     setState(() {
                                                       assetTypeController.text =
@@ -237,6 +262,8 @@ class _AddAssetsState extends State<AddAssets> {
                                                 ),
                                                 ListTile(
                                                   title: const Text("Laptop"),
+                                                  leading: const Icon(Icons.add_box_rounded,),
+
                                                   onTap: () {
                                                     setState(() {
                                                       assetTypeController.text =
@@ -253,6 +280,8 @@ class _AddAssetsState extends State<AddAssets> {
                                                 ),
                                                 ListTile(
                                                   title: const Text("Bag"),
+                                                  leading: const Icon(Icons.add_box_rounded,),
+
                                                   onTap: () {
                                                     setState(() {
                                                       assetTypeController.text =
@@ -270,6 +299,8 @@ class _AddAssetsState extends State<AddAssets> {
                                                 ListTile(
                                                   title: const Text(
                                                       "Internet Device"),
+                                                  leading: const Icon(Icons.add_box_rounded,),
+
                                                   onTap: () {
                                                     setState(() {
                                                       assetTypeController.text =
@@ -285,8 +316,10 @@ class _AddAssetsState extends State<AddAssets> {
                                                       .black, // Customize the color of the horizontal line
                                                 ),
                                                 ListTile(
-                                                  title:
-                                                      const Text("Mobile Phone"),
+                                                  title: const Text(
+                                                      "Mobile Phone"),
+                                                  leading: const Icon(Icons.add_box_rounded,),
+
                                                   onTap: () {
                                                     setState(() {
                                                       assetTypeController.text =
@@ -338,10 +371,11 @@ class _AddAssetsState extends State<AddAssets> {
                                       if (isExpanded2)
                                         Container(
                                           // height: MediaQuery.of(context).size.height * 0.12,
-                                          width: double.infinity,
                                           decoration: BoxDecoration(
-                                            border: Border.all(),
-                                            color: Colors.amber,
+                                              borderRadius:
+                                              BorderRadius.circular(12),
+                                              color: Colors.grey,
+                                              border: Border.all(color: Colors.grey.shade100)
                                           ),
                                           child: SingleChildScrollView(
                                             child: Column(
@@ -351,10 +385,8 @@ class _AddAssetsState extends State<AddAssets> {
                                                   onTap: () {
                                                     setState(() {
                                                       selectedfloor =
-                                                          optionValues2[
-                                                              'Ais-Floor-1']!;
-                                                      locationController.text =
-                                                          "Ais-Floor-1";
+                                                          optionValues2['Ais-Floor-1']!;
+                                                      locationController.text = "Ais-Floor-1";
 
                                                       isExpanded2 = false;
                                                     });
@@ -380,12 +412,7 @@ class _AddAssetsState extends State<AddAssets> {
                                                     });
                                                   },
                                                 ),
-                                                Container(
-                                                  height: 1,
-                                                  width: double.infinity,
-                                                  color: Colors
-                                                      .black, // Customize the color of the horizontal line
-                                                ),
+
                                               ],
                                             ),
                                             // Replace with your desired title
@@ -420,7 +447,7 @@ class _AddAssetsState extends State<AddAssets> {
 
                                           // Uncomment the following code to navigate to the admin page
                                           Navigator.pushReplacementNamed(
-                                              context, Routes.adminPage);
+                                              context, Routes.dashboard);
 
                                           // }
                                         },

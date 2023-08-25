@@ -553,6 +553,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:web_portal/app_url.dart';
+import 'package:web_portal/dashboard/presentation/pages/un_assigned_assets.dart';
 import '../../../app_theme.dart';
 import '../widgets/routes.dart';
 import 'assets_statistics.dart';
@@ -579,7 +580,7 @@ class _AllAssetScreenState extends State<AllAssetScreen> {
   Future<void> getAllAssets() async {
     try {
       Dio dio = Dio();
-      var url =AppUrl.baseUrl+AppUrl.allAsset;
+      var url = AppUrl.baseUrl + AppUrl.allAsset;
       // var url = 'http://192.168.4.139:3000/asset/allAssets';
       var response = await dio.get(url);
       if (response.statusCode == 200) {
@@ -608,133 +609,26 @@ class _AllAssetScreenState extends State<AllAssetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
 
     return Container(
-color: Colors.grey.shade600,
-      child: SingleChildScrollView(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),        color: AppTheme.scaffoldBackgroundColor,
+      ),      child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const CustomHeading(title: 'All Assets',showBackButton: true),
+              const CustomHeading(title: 'All Assets', showBackButton: true),
 
-              GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, Routes.assignAssetsToEmployees);
-                  },
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                        height: MediaQuery.of(context).size.height * 0.08,
-                        width: MediaQuery.of(context).size.width * 0.12,
-                        decoration: BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.spaceAround,
-                            children: [
-                              Text("Assign Assets" ,style: TextStyle(
-                          fontSize: _size.width > 1400
-                          ? 18
-                              : _size.width > 1350
-                          ? 16
-                              : _size.width > 1300
-                          ? 15
-                              : _size.width > 1250
-                          ? 14
-                              : _size.width > 1200
-                          ? 13
-                              : _size.width > 1150
-                          ? 12
-                              : _size.width > 1100
-                          ? 11
-                              : _size.width > 1050
-                          ? 10
-                              : _size.width > 1000
-                          ? 9
-                              : _size.width > 950
-                          ? 8
-                              : _size.width > 900
-                          ? 7
-                              : _size.width > 850
-                          ? 6
-                              : _size.width > 800
-                          ? 6
-                              : _size.width > 750
-                          ? 6
-                              : _size.width > 700
-                          ? 6
-                              : _size.width > 650
-                          ? 6
-                              : _size.width > 600
-                          ? 6
-                              : _size.width > 550
-                          ? 6
-                              : _size.width > 500
-                          ? 6
-                              : _size.width > 450
-                          ? 6
-                              : _size.width > 400
-                          ? 6
-                              : _size.width > 350
-                              ? 6
-                              : 6 ,
-
-                            )),
-                              Icon(Icons.add,size:  _size.width > 1400
-                                  ? 17
-                                  : _size.width > 1350
-                                  ? 16
-                                  : _size.width > 1300
-                                  ? 15
-                                  : _size.width > 1250
-                                  ? 14
-                                  : _size.width > 1200
-                                  ? 14
-                                  : _size.width > 1150
-                                  ? 14
-                                  : _size.width > 1100
-                                  ? 14
-                                  : _size.width > 1050
-                                  ? 14
-                                  : _size.width > 1000
-                                  ? 14
-                                  : _size.width > 950
-                                  ? 14
-                                  : _size.width > 900
-                                  ? 14
-                                  : _size.width > 850
-                                  ? 14
-                                  : _size.width > 800
-                                  ? 14
-                                  : _size.width > 750
-                                  ? 14
-                                  : _size.width > 700
-                                  ? 14
-                                  : _size.width > 650
-                                  ? 14
-                                  : _size.width > 600
-                                  ? 14
-                                  : _size.width > 550
-                                  ? 6
-                                  : _size.width > 500
-                                  ? 6
-                                  : _size.width > 450
-                                  ? 6
-                                  : _size.width > 400
-                                  ? 6
-                                  : _size.width > 350
-                                  ? 6
-                                  : 6 ,),
-                            ],
-                          ),
-                        )),
-                  )),
+              OrangeButton(
+                size: size,
+                title: 'Assign Asset',
+                ontap: () {
+                  Navigator.pushReplacementNamed(
+                      context, Routes.assignAssetsToEmployees);
+                },
+              ),
               const SizedBox(
                 height: 10,
               ),
@@ -747,8 +641,7 @@ color: Colors.grey.shade600,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: DataTable(
-
-                    // columnSpacing: MediaQuery.of(context).size.width * 0.11,
+                    columnSpacing: MediaQuery.of(context).size.width * 0.11,
                     columns: [
                       DataColumn(
                         label: Row(
@@ -800,45 +693,45 @@ color: Colors.grey.shade600,
                               color: AppTheme.primaryColor),
                         ),
                       ),
-
                     ],
-                    rows: assets.map((asset){
-                      return DataRow(
-                        cells: [
-                          DataCell(
-                            Text(
-                              asset['serial_no']?.toString() ?? 'N/A',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                          DataCell(
+                    rows: assets.map(
+                      (asset) {
+                        return DataRow(
+                          cells: [
+                            DataCell(
                               Text(
-                                asset['asset_id']?.toString() ?? 'N/A',
-                                style: TextStyle(color: Colors.white),
+                                asset['serial_no']?.toString() ?? 'N/A',
+                                style: const TextStyle(color: Colors.white),
                               ),
-                              showEditIcon: true),
-                          DataCell(
+                            ),
+                            DataCell(
+                                Text(
+                                  asset['asset_id']?.toString() ?? 'N/A',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                showEditIcon: true),
+                            DataCell(
                               Text(
                                 asset['asset_name']?.toString() ?? 'N/A',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              ),
-                          DataCell(
-                            Text(asset["type_name"]?.toString() ?? 'N/A',
-                              style: TextStyle(color: Colors.white),
                             ),
-
-                          ),
-                          DataCell(
+                            DataCell(
+                              Text(
+                                asset["type_name"]?.toString() ?? 'N/A',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            DataCell(
                               Text(
                                 asset['floor_location']?.toString() ?? 'N/A',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              ),
-
-                        ],
-                      );
-                    },).toList(),
+                            ),
+                          ],
+                        );
+                      },
+                    ).toList(),
                   ),
                 ),
               ),

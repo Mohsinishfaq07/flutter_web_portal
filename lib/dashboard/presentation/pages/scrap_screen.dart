@@ -1,42 +1,42 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:web_portal/app_theme.dart';
 import 'package:web_portal/dashboard/presentation/pages/un_assigned_assets.dart';
 
+import '../../../app_theme.dart';
 import '../../../app_url.dart';
-
 import '../widgets/routes.dart';
 import 'assets_statistics.dart';
 
-class SecondFlorAsset extends StatefulWidget {
-  const SecondFlorAsset({super.key});
+class ScrapScreen extends StatefulWidget {
+  const ScrapScreen({super.key});
 
   @override
-  State<SecondFlorAsset> createState() => _SecondFlorAssetState();
+  State<ScrapScreen> createState() => _ScrapScreenState();
 }
 
-class _SecondFlorAssetState extends State<SecondFlorAsset> {
+class _ScrapScreenState extends State<ScrapScreen> {
   List<Map<String, dynamic>> assets = [];
   bool isLoading = false;
   @override
   void initState() {
     super.initState();
-    getSecondFloorAssets();
+    getScrapAssets();
   }
 
-  Future<void> getSecondFloorAssets() async {
+  Future<void> getScrapAssets() async {
     try {
       Dio dio = Dio();
-      var url = AppUrl.baseUrl + AppUrl.secondFloorAsset;
+      var url = AppUrl.baseUrl + AppUrl.scrap;
+      // var url = 'http://192.168.4.139:3000/asset/location/Ais-F1';
       var response = await dio.get(url);
       if (response.statusCode == 200) {
         print(response.statusCode);
         print(response);
         var responseData = response.data;
         print(responseData);
-        if (responseData['locations'] is List) {
+        if (responseData['scrap_assets'] is List) {
           setState(() {
-            assets = List.from(responseData['locations']);
+            assets = List.from(responseData['scrap_assets']);
             isLoading = false;
           });
         } else {
@@ -55,31 +55,29 @@ class _SecondFlorAssetState extends State<SecondFlorAsset> {
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
 
     return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),        color: AppTheme.scaffoldBackgroundColor,
-      ),      child: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(20.0),
+      color:  AppTheme.scaffoldBackgroundColor,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const CustomHeading(
-                  title: 'Second Floor Assets Statistics',
+                  title: 'Scrap Assets Statistics',
                   showBackButton: true),
-              OrangeButton(
-                  size: _size,
-                  title: "Add Asset",
-                  ontap: () {
-                    Navigator.pushReplacementNamed(context, Routes.addAssets);
-                  }),
+              OrangeButton(size: size, title: "Add Asset", ontap: () {
+
+                Navigator.pushReplacementNamed(
+                    context, Routes.addAssets);
+              }),
               const SizedBox(
                 height: 10,
               ),
               Container(
                 width: MediaQuery.of(context).size.width,
-
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     color: Colors.grey.shade500),
@@ -92,12 +90,11 @@ class _SecondFlorAssetState extends State<SecondFlorAsset> {
                         label: Row(
                           children: [
                             Text(
-                              "Serial number",
+                              "Serial Number",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: AppTheme.primaryColor),
                             ),
-                            const Icon(Icons.architecture),
                           ],
                         ),
                       ),
@@ -140,7 +137,7 @@ class _SecondFlorAssetState extends State<SecondFlorAsset> {
                       ),
                     ],
                     rows: assets.map(
-                      (asset) {
+                          (asset) {
                         return DataRow(
                           cells: [
                             DataCell(
@@ -180,10 +177,47 @@ class _SecondFlorAssetState extends State<SecondFlorAsset> {
                   ),
                 ),
               ),
+              // Container(
+              //   child: isLoading
+              //       ? const Center(child: CircularProgressIndicator())
+              //       : assets.isNotEmpty
+              //           ? ListView.builder(
+              //               shrinkWrap: true,
+              //               itemCount: assets.length,
+              //               itemBuilder: (context, index) {
+              //                 final asset = assets[index];
+              //                 return Column(
+              //                   children: [
+              //                     Text(
+              //                         asset['asset_name']?.toString() ?? 'N/A'),
+              //                     Text(
+              //                         asset['location_id']?.toString() ?? 'N/A'),
+              //                     ListTile(
+              //                       title: Text(
+              //                           asset['asset_name']?.toString() ?? 'N/A'),
+              //                       subtitle: Text(
+              //                           asset['location_id']?.toString() ?? 'N/A'),
+              //                       // Customize the UI as needed for each asset
+              //                     ),
+              //                   ],
+              //                 );
+              //               },
+              //             )
+              //           : Center(
+              //               child: Container(
+              //                   height: MediaQuery.of(context).size.height,
+              //                   width: MediaQuery.of(context).size.width,
+              //                   decoration: BoxDecoration(
+              //                       color: Colors.grey.shade100,
+              //                       borderRadius: BorderRadius.circular(12)),
+              //                   child: const Center(
+              //                       child: Text('No data available'))),
+              //             ),
+              // )
             ],
           ),
         ),
       ),
-    );
+    );;
   }
 }

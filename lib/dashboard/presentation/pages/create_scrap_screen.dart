@@ -254,11 +254,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../../app_theme.dart';
-import '../../../app_url.dart';
 import '../../../continue_button.dart';
 import '../../../custom_text_form_field.dart';
 import '../../../authentication/presentation/manager/auth_provider.dart';
-import '../manager/dashboard_provider.dart';
 import '../widgets/routes.dart';
 import 'assets_statistics.dart';
 import 'package:provider/provider.dart';
@@ -266,23 +264,20 @@ import 'package:responsive_builder/responsive_builder.dart';
 import '../../../app_assets.dart';
 import 'package:http/http.dart' as http;
 
-import 'dashboard_page.dart';
-
-class DeleteAsset extends StatefulWidget {
-  const DeleteAsset({
+class CreateScrapScreen extends StatefulWidget {
+  const CreateScrapScreen({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<DeleteAsset> createState() => _DeleteAssetState();
+  State<CreateScrapScreen> createState() => _CreateScrapScreenState();
 }
 
-class _DeleteAssetState extends State<DeleteAsset> {
+class _CreateScrapScreenState extends State<CreateScrapScreen> {
   final TextEditingController assetIdController = TextEditingController();
-  final GlobalKey<FormState> _webDeleteFormKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _tabDeleteFormKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _mobileDeleteFormKey = GlobalKey<FormState>();
-
+  final GlobalKey<FormState> _webCreateScrapFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _tabCreateScrapFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _mobileCreateScrapFormKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
@@ -296,22 +291,22 @@ class _DeleteAssetState extends State<DeleteAsset> {
         child: ResponsiveBuilder(
           builder: (context, sizingInformation) {
             if (sizingInformation.isMobile) {
-              return DeleteMobile(
-                deleteFormKey: _mobileDeleteFormKey,
+              return CreateScrapMobile(
+                deleteFormKey: _mobileCreateScrapFormKey,
                 assetIdController: assetIdController,
                 authProvider: authProvider,
               );
             } else if (sizingInformation.isTablet) {
-              return DeleteTab(
+              return CreateScrapTab(
                 size: size,
-                deleteFormKey: _tabDeleteFormKey,
+                deleteFormKey: _tabCreateScrapFormKey,
                 assetIdController: assetIdController,
                 authProvider: authProvider,
               );
             } else {
-              return DeleteWeb(
+              return CreateScrapWeb(
                 size: size,
-                deleteFormKey: _webDeleteFormKey,
+                deleteFormKey: _webCreateScrapFormKey,
                 assetIdController: assetIdController,
                 authProvider: authProvider,
               );
@@ -323,185 +318,163 @@ class _DeleteAssetState extends State<DeleteAsset> {
   }
 }
 
-class DeleteWeb extends StatefulWidget {
-  const DeleteWeb({
+class CreateScrapWeb extends StatefulWidget {
+  const CreateScrapWeb({
     super.key,
     required Size size,
-
     required GlobalKey<FormState> deleteFormKey,
     required this.assetIdController,
     required AuthProvider authProvider,
-  })  :
+  })  : _size = size,
         _webDeleteFormKey = deleteFormKey;
 
+  final Size _size;
   final GlobalKey<FormState> _webDeleteFormKey;
   final TextEditingController assetIdController;
 
   @override
-  State<DeleteWeb> createState() => _DeleteWebState();
+  State<CreateScrapWeb> createState() => _CreateScrapWebState();
 }
 
-class _DeleteWebState extends State<DeleteWeb> {
-  TextEditingController assetIdController = TextEditingController();
+class _CreateScrapWebState extends State<CreateScrapWeb> {
 
-  Future<void> deleteAsset() async {
-    var url = AppUrl.baseUrl + AppUrl.deleteAsset;
-    var data = {
-      "assetID": assetIdController.text,
-      // "asset_name": assetNameController.text,
-      // "user_id": userIdController.text,
-      // "assetID": 54,
-      // "asset_name": "samsung",
-      // "user_id": 25,
-    };
+  Future<void> moveToScrap(BuildContext context, String assetId ) async {
     try {
+      var url = 'http://192.168.5.27:3000/asset/mark_scrap/$assetId';
       Dio dio = Dio();
-      print(data);
-      var response = await dio.delete(url, data: data);
+      var response = await dio.put(url);
+
       if (response.statusCode == 200) {
-        print(response.statusCode);
-        print('Asset Assigned Successful!');
-        print('Response data: ${response.data}');
+        // Handle successful response
+        print('Asset moved to scrap successfully');
         Navigator.pushReplacementNamed(context, Routes.dashboard);
       } else {
-        print(response.statusCode);
-        // Error handling for failed response status code
-        print('Request failed with status: ${response}');
-        // Show appropriate message to the user
-        if (response.statusCode == 401) {
-          // Unauthorized, invalid credentials
-          print('Invalid credentials. Please try again.');
-        } else {
-          // Handle other error scenarios...
-          print('Something went wrong. Please try again later.');
-        }
+        // Handle error scenarios
+        print('Failed to move asset to scrap');
       }
     } catch (e) {
-      // Error handling for network issues or other exceptions
+      // Handle exceptions
       print('Error: $e');
-      print('Network error. Please check your internet connection.');
     }
-  }
-  DashboardProvider? dashboardProvider ;
 
+}
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-
-
-
-    });}
   @override
   void dispose() {
-    print("asdfghjkl");
-    dashboardProvider!.removePage();
+    widget.assetIdController.dispose(); // Dispose the controller
     super.dispose();
   }
 
 
+
   @override
   Widget build(BuildContext context) {
-    dashboardProvider??= Provider.of<DashboardProvider>(context);
-
     Size size = MediaQuery.of(context).size;
 
-     return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),
-        color: AppTheme.scaffoldBackgroundColor,
-      ),      child: Padding(
+    return Container(
+      decoration: BoxDecoration(color: AppTheme.scaffoldBackgroundColor),
+      child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const CustomHeading(
-                title: 'Delete Un-Assigned Asset', showBackButton: true),
+                title: 'Move Un-Assigned Asset to scrap', showBackButton: true),
             const SizedBox(height: 10),
             Container(
               decoration: BoxDecoration(
                 color: Colors.grey,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Center(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Visibility(
-                          visible: size.width != 900,
-                          child: Padding(
+              child: SingleChildScrollView(
+                child: Center(
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              height: size.width > 1200
-                                  ? 260
-                                  : size.width > 1000
-                                  ? 240
-                                  : size.width > 900
-                                  ? 220
-                                  : size.width > 800
-                                  ? 200
-                                  : size.width > 750
-                                  ? 180
-                                  : size.width > 700
-                                  ? 160
-                                  : 0,
-                              child: Image.asset(
-                                "assets/images/png/ic_ais_logo.png",
+
+                             child: Visibility(
+                                  visible: size.width != 900,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12),
+                                    child: SizedBox(
+                                        height: size.width > 1200
+                                            ? 260
+                                            : size.width > 1000
+                                            ? 240
+                                            : size.width > 900
+                                            ? 220
+                                            : size.width > 800
+                                            ? 200
+                                            : size.width > 750
+                                            ? 180
+                                            : size.width >
+                                            700
+                                            ? 160
+                                            : 0,
+
+                                        // height: _size.width > 1300 ? 200:50,
+                                        child: Image.asset(
+                                            "assets/images/png/ic_ais_logo.png")),
+                                  ),
+                                ),
+
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                              const EdgeInsets.symmetric(horizontal: 12),
+                              child: Column(
+                                children: [
+                                  CustomTextFormField(
+                                    allowNumbersOnly: true,
+                                    controller: widget.assetIdController,
+                                    width: 400,
+                                    textInputType: TextInputType.number,
+                                    hintText: "Asset Id",
+                                    onChanged: (value) {},
+                                    prefixIcon: Icon(
+                                      Icons.laptop_chromebook,
+                                      color: AppTheme.primaryColor,
+                                    ),
+                                    validator: (value) {},
+                                  ),
+                                  const SizedBox(height: 20),
+                                  ContinueButton(
+                                    width: 400,
+                                    text: "Add to scrap",
+
+                                    ontap: () async {
+                                      moveToScrap(context, widget.assetIdController.text);
+
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  ContinueButton(
+                                    width: 400,
+                                    text: "Cancel",
+                                    ontap: () {
+                                      Navigator.pushReplacementNamed(
+                                          context, Routes.adminPage);
+
+                                      // }
+                                    },
+                                  )
+                                ],
                               ),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Column(
-                              children: [
-                                CustomTextFormField(
-                                  allowNumbersOnly: true,
-                                  controller: assetIdController,
-                                  width: 400,
-                                  textInputType: TextInputType.number,
-                                  hintText: "Asset Id",
-                                  onChanged: (value) {},
-                                  prefixIcon: Icon(
-                                    Icons.laptop_chromebook,
-                                    color: AppTheme.primaryColor,
-                                  ),
-                                  validator: (value) {},
-                                ),
-                                const SizedBox(height: 20),
-                                ContinueButton(
-                                  width: 400,
-                                  text: "Delete Asset",
-                                  ontap: () async {
-
-                                     deleteAsset();
-
-                                   },
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                ContinueButton(
-                                  width: 400,
-                                  text: "Cancel",
-                                  ontap: () {
-                                    Navigator.pushReplacementNamed(
-                                      context,
-                                      Routes.dashboard,
-                                    );
-                                  },
-                                )
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -512,9 +485,8 @@ class _DeleteWebState extends State<DeleteWeb> {
   }
 }
 
-
-class DeleteTab extends StatefulWidget {
-  const DeleteTab({
+class CreateScrapTab extends StatefulWidget {
+  const CreateScrapTab({
     super.key,
     required Size size,
     required GlobalKey<FormState> deleteFormKey,
@@ -528,155 +500,118 @@ class DeleteTab extends StatefulWidget {
   final TextEditingController assetIdController;
 
   @override
-  State<DeleteTab> createState() => _DeleteTabState();
+  State<CreateScrapTab> createState() => _CreateScrapTabState();
 }
 
-class _DeleteTabState extends State<DeleteTab> {
+class _CreateScrapTabState extends State<CreateScrapTab> {
   TextEditingController assetIdController = TextEditingController();
-
-  Future<void> deleteAsset() async {
-    var url = AppUrl.baseUrl + AppUrl.deleteAsset;
-    var data = {
-      "assetID": assetIdController.text,
-      // "asset_name": assetNameController.text,
-      // "user_id": userIdController.text,
-      // "assetID": 54,
-      // "asset_name": "samsung",
-      // "user_id": 25,
-    };
+  Future<void> moveToScrap(BuildContext context, String assetId) async {
     try {
+      String url = 'http://192.168.5.27:3000/asset/mark_scrap/$assetId';
       Dio dio = Dio();
-      print(data);
-      var response = await dio.delete(url, data: data);
+      var response = await dio.put(url);
+
       if (response.statusCode == 200) {
-        print(response.statusCode);
-        print('Asset Assigned Successful!');
-        print('Response data: ${response.data}');
+        // Handle successful response
+        print('Asset moved to scrap successfully');
         Navigator.pushReplacementNamed(context, Routes.dashboard);
       } else {
-        print(response.statusCode);
-        // Error handling for failed response status code
-        print('Request failed with status: ${response}');
-        // Show appropriate message to the user
-        if (response.statusCode == 401) {
-          // Unauthorized, invalid credentials
-          print('Invalid credentials. Please try again.');
-        } else {
-          // Handle other error scenarios...
-          print('Something went wrong. Please try again later.');
-        }
+        // Handle error scenarios
+        print('Failed to move asset to scrap');
       }
     } catch (e) {
-      // Error handling for network issues or other exceptions
+      // Handle exceptions
       print('Error: $e');
-      print('Network error. Please check your internet connection.');
     }
+
   }
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider authProvider = Provider.of<AuthProvider>(context);
 
-    return  Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),        color: AppTheme.scaffoldBackgroundColor,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 22, bottom: 5),
-                child: Image.asset(
-                  AppAssets.aislogo,
-                  color: Colors.white,
-                  fit: BoxFit.contain,
-                  height: 100,
+    return Scaffold(
+      backgroundColor: AppTheme.scaffoldBackgroundColor,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 22, bottom: 5),
+                  child: Image.asset(
+                    AppAssets.aislogo,
+                    color: Colors.white,
+                    fit: BoxFit.contain,
+                    height: 100,
+                  ),
                 ),
-              ),
-              Text(
-                'Delete Asset!',
-                style: AppTheme.heading1
-                    .copyWith(color: AppTheme.primaryColor, fontSize: 25),
-              ),
-              const Text(
-                'Please provide Un-Assigned Asset id',
-                style: TextStyle(color: Colors.grey, fontSize: 18),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              Form(
-                key: widget._tabDeleteFormKey,
-                child: Column(
-                  children: [
-                    CustomTextFormField(
-                      allowNumbersOnly: true,
-                      controller: authProvider.assetIdController,
-                      width: MediaQuery.of(context).size.width *0.8,
-                      textInputType: TextInputType.number,
-                      hintText: "Asset Id",
-                      onChanged: (value) {},
-                      prefixIcon: Icon(
-                        Icons.laptop_chromebook,
-                        color: AppTheme.primaryColor,
+                Text(
+                  'Delete Asset!',
+                  style: AppTheme.heading1
+                      .copyWith(color: AppTheme.primaryColor, fontSize: 25),
+                ),
+                const Text(
+                  'Please provide Un-Assigned Asset id',
+                  style: TextStyle(color: Colors.grey, fontSize: 18),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                Form(
+                  key: widget._tabDeleteFormKey,
+                  child: Column(
+                    children: [
+                      CustomTextFormField(
+                        allowNumbersOnly: true,
+                        controller:  assetIdController,
+                        width: MediaQuery.of(context).size.width *0.8,
+                        textInputType: TextInputType.number,
+                        hintText: "Asset Id",
+                        onChanged: (value) {},
+                        prefixIcon: Icon(
+                          Icons.laptop_chromebook,
+                          color: AppTheme.primaryColor,
+                        ),
+                        validator: (value) {},
                       ),
-                      validator: (value) {},
-                    ),
-                    const SizedBox(height: 20),
-                    ContinueButton(
-                      width: MediaQuery.of(context).size.width *0.8,
-                      text: "Save",
-                      ontap: () async {
-                        // if (widget._tabDeleteFormKey.currentState!.validate()) {
-                        //   final authProvider =
-                        //       Provider.of<AuthProvider>(context, listen: false);
-                        //   await authProvider.deleteAsset(
-                        //       context, );
-                        //
-                        //   final snackBar = SnackBar(
-                        //     content: Text(
-                        //       "Successfully Deleted in as ${authProvider.userName}",
-                        //       style: const TextStyle(
-                        //         color: Colors.blue,
-                        //         fontWeight: FontWeight.bold,
-                        //       ),
-                        //     ),
-                        //     backgroundColor: AppTheme
-                        //         .primaryColor, // Customize the background color
-                        //   );
-                        //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        // }
-                        deleteAsset();
-                      },
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ContinueButton(
-                      width: MediaQuery.of(context).size.width *0.8,
-                      text: "Cancel",
-                      ontap: () {
-                        Navigator.pushReplacementNamed(
-                            context, Routes.adminPage);
+                      const SizedBox(height: 20),
+                      ContinueButton(
+                        width: MediaQuery.of(context).size.width *0.8,
+                        text: "Save",
+                        ontap: () async {
+                          moveToScrap(context,assetIdController.text);
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      ContinueButton(
+                        width: MediaQuery.of(context).size.width *0.8,
+                        text: "Cancel",
+                        ontap: () {
+                          Navigator.pushReplacementNamed(
+                              context, Routes.adminPage);
 
-                        // }
-                      },
-                    )
-                  ],
+                          // }
+                        },
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-            ],
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
           ),
         ),
-      );
-
+      ),
+    );
   }
 }
 
-class DeleteMobile extends StatefulWidget {
-  const DeleteMobile({
+class CreateScrapMobile extends StatefulWidget {
+  const CreateScrapMobile({
     super.key,
     required GlobalKey<FormState> deleteFormKey,
     required this.assetIdController,
@@ -687,57 +622,42 @@ class DeleteMobile extends StatefulWidget {
   final TextEditingController assetIdController;
 
   @override
-  State<DeleteMobile> createState() => _DeleteMobileState();
+  State<CreateScrapMobile> createState() => _CreateScrapMobileState();
 }
 
-class _DeleteMobileState extends State<DeleteMobile> {
+class _CreateScrapMobileState extends State<CreateScrapMobile> {
+  TextEditingController assetIdController = TextEditingController();
+  Future<void> moveToScrap(BuildContext context, String assetId) async {
+    try {
+      String url = 'http://192.168.5.27:3000/asset/mark_scrap/$assetId';
+      Dio dio = Dio();
+      var response = await dio.put(url);
+
+      if (response.statusCode == 200) {
+        // Handle successful response
+        print('Asset moved to scrap successfully');
+        Navigator.pushReplacementNamed(context, Routes.dashboard);
+      } else {
+        // Handle error scenarios
+        print('Failed to move asset to scrap');
+      }
+    } catch (e) {
+      // Handle exceptions
+      print('Error: $e');
+    }
+
+  }
+
+
   String responseMessage = "";
 
   bool isExpanded = false;
   String selectedOption = "Select Your Role";
-  TextEditingController assetIdController = TextEditingController();
 
-  Future<void> deleteAsset() async {
-    var url = AppUrl.baseUrl + AppUrl.deleteAsset;
-    var data = {
-      "assetID": assetIdController.text,
-      // "asset_name": assetNameController.text,
-      // "user_id": userIdController.text,
-      // "assetID": 54,
-      // "asset_name": "samsung",
-      // "user_id": 25,
-    };
-    try {
-      Dio dio = Dio();
-      print(data);
-      var response = await dio.delete(url, data: data);
-      if (response.statusCode == 200) {
-        print(response.statusCode);
-        print('Asset Assigned Successful!');
-        print('Response data: ${response.data}');
-        Navigator.pushReplacementNamed(context, Routes.dashboard);
-      } else {
-        print(response.statusCode);
-        // Error handling for failed response status code
-        print('Request failed with status: ${response}');
-        // Show appropriate message to the user
-        if (response.statusCode == 401) {
-          // Unauthorized, invalid credentials
-          print('Invalid credentials. Please try again.');
-        } else {
-          // Handle other error scenarios...
-          print('Something went wrong. Please try again later.');
-        }
-      }
-    } catch (e) {
-      // Error handling for network issues or other exceptions
-      print('Error: $e');
-      print('Network error. Please check your internet connection.');
-    }
-  }
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
 
     return Scaffold(
       backgroundColor: AppTheme.scaffoldBackgroundColor,
@@ -797,29 +717,7 @@ class _DeleteMobileState extends State<DeleteMobile> {
                         //       "Delete Asset function is running ");
                         // },
                         ontap: () async {
-                          deleteAsset();
-                          // if (widget._mobileDeleteFormKey.currentState!
-                          //     .validate()) {
-                          //   final authProvider = Provider.of<AuthProvider>(
-                          //       context,
-                          //       listen: false);
-                          //   await authProvider.deleteAsset(
-                          //       context,);
-                          //
-                          //   final snackBar = SnackBar(
-                          //     content: Text(
-                          //       "Successfully Deleted in as ${authProvider.userName}",
-                          //       style: const TextStyle(
-                          //         color: Colors.blue,
-                          //         fontWeight: FontWeight.bold,
-                          //       ),
-                          //     ),
-                          //     backgroundColor: AppTheme
-                          //         .primaryColor, // Customize the background color
-                          //   );
-                          //   ScaffoldMessenger.of(context)
-                          //       .showSnackBar(snackBar);
-                          // }
+                     moveToScrap(context, assetIdController.text);
                         },
                       ),
                       const SizedBox(

@@ -254,16 +254,17 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:web_portal/app_url.dart';
 import '../../../app_theme.dart';
-import '../../../colors.dart';
 import '../../../continue_button.dart';
 import '../../../custom_text_form_field.dart';
+import '../manager/dashboard_provider.dart';
 import '../widgets/routes.dart';
 import 'package:http/http.dart' as http;
 
 import 'assets_statistics.dart';
+import 'dashboard_page.dart';
 
 class AssignAssets extends StatefulWidget {
   const AssignAssets({super.key});
@@ -279,8 +280,7 @@ class _AssignAssetsState extends State<AssignAssets> {
     var url = AppUrl.baseUrl + AppUrl.assignAsset;
     var data = {
       "assetID": assetIdController.text,
-      // "asset_name": assetNameController.text,
-      "user_id": userIdController.text,
+       "user_id": userIdController.text,
       // "assetID": 54,
       // "asset_name": "samsung",
       // "user_id": 25,
@@ -313,181 +313,164 @@ class _AssignAssetsState extends State<AssignAssets> {
       print('Network error. Please check your internet connection.');
     }
   }
+  DashboardProvider? dashboardProvider ;
+
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+
+
+
+    });}
+  @override
+  void dispose() {
+    print("asdfghjkl");
+    dashboardProvider!.removePage();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    dashboardProvider??= Provider.of<DashboardProvider>(context);
+
+    Size size = MediaQuery.of(context).size;
 
     return Container(
-      decoration: BoxDecoration(color: Colors.grey.shade600),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const CustomHeading(title: 'Assign Assets to employees',showBackButton: true),
-              const SizedBox(height: 10,),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white10,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: SingleChildScrollView(
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            LayoutBuilder(
-                              builder: (BuildContext context,
-                                  BoxConstraints constraints) {
-                                double imageWidth = constraints.maxWidth;
-                                return Visibility(
-                                  visible: imageWidth != 700,
-                                  child: Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12),
-                                      child: SizedBox(
-                                          height: _size.width > 1200
-                                              ? 260
-                                              : _size.width > 1000
-                                                  ? 240
-                                                  : _size.width > 900
-                                                      ? 220
-                                                      : _size.width > 800
-                                                          ? 200
-                                                          : _size.width > 750
-                                                              ? 180
-                                                              : _size.width >
-                                                                      700
-                                                                  ? 160
-                                                                  : 0,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),        color: AppTheme.scaffoldBackgroundColor,
+      ),      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const CustomHeading(title: 'Assign Assets to employees',showBackButton: true),
+            const SizedBox(height: 10,),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: SingleChildScrollView(
+                child: Center(
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          LayoutBuilder(
+                            builder: (BuildContext context,
+                                BoxConstraints constraints) {
+                              double imageWidth = constraints.maxWidth;
+                              return Visibility(
+                                visible: imageWidth != 700,
+                                child: Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12),
+                                    child: SizedBox(
+                                        height: size.width > 1200
+                                            ? 260
+                                            : size.width > 1000
+                                                ? 240
+                                                : size.width > 900
+                                                    ? 220
+                                                    : size.width > 800
+                                                        ? 200
+                                                        : size.width > 750
+                                                            ? 180
+                                                            : size.width >
+                                                                    700
+                                                                ? 160
+                                                                : 0,
 
-                                          // height: _size.width > 1300 ? 200:50,
-                                          child: Image.asset(
-                                              "assets/images/png/ic_ais_logo.png")),
-                                    ),
+                                        // height: _size.width > 1300 ? 200:50,
+                                        child: Image.asset(
+                                            "assets/images/png/ic_ais_logo.png")),
                                   ),
-                                );
-                              },
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 12),
-                                child: Column(
-                                  children: [
-                                    // Align(
-                                    //   alignment: Alignment.centerRight,
-                                    //   child: GestureDetector(
-                                    //     onTap: () {
-                                    //       Navigator.pop(context);
-                                    //     },
-                                    //     child: Container(
-                                    //         decoration: BoxDecoration(
-                                    //             border:
-                                    //                 Border.all(color: AppTheme.primaryColor),
-                                    //             borderRadius: BorderRadius.circular(30)),
-                                    //         child: Icon(
-                                    //           Icons.close,
-                                    //           color: AppTheme.primaryColor,
-                                    //           size: 18,
-                                    //         )),
-                                    //   ),
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    const SizedBox(height: 20),
-
-                                    CustomTextFormField(
-                                      allowNumbersOnly: true,
-                                      controller: assetIdController,
-                                      height: 55,
-                                      textInputType: TextInputType.number,
-                                      width: double.infinity,
-                                      hintText: "Asset Id",
-                                      onChanged: (value) {},
-                                      prefixIcon: Icon(
-                                        Icons.laptop_chromebook,
-                                        color: AppTheme.primaryColor,
-                                      ),
-                                      validator: (value) {},
-                                    ),
-                                    const SizedBox(height: 10),
-                                    // CustomTextFormField(
-                                    //   allowNumbersOnly: false,
-                                    //   controller: assetNameController,
-                                    //   height: 55,
-                                    //   width: double.infinity,
-                                    //   hintText: "Asset Name",
-                                    //   textInputType: TextInputType.name,
-                                    //   onChanged: (value) {},
-                                    //   prefixIcon: Icon(
-                                    //     Icons.laptop_chromebook,
-                                    //     color: AppTheme.primaryColor,
-                                    //   ),
-                                    //   validator: (value) {},
-                                    // ),
-                                    // const SizedBox(height: 10),
-                                    CustomTextFormField(
-                                      allowNumbersOnly: false,
-                                      controller: userIdController,
-                                      height: 55,
-                                      width: double.infinity,
-                                      hintText: "user id",
-                                      textInputType: TextInputType.name,
-                                      onChanged: (value) {},
-                                      prefixIcon: Icon(
-                                        Icons.laptop_chromebook,
-                                        color: AppTheme.primaryColor,
-                                      ),
-                                      validator: (value) {},
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    ContinueButton(
-                                      text: "Save",
-                                      ontap: () {
-                                        // if (_loginFormKey.currentState!.validate()) {
-
-                                        // }
-                                        assignAssets();
-                                        print(
-                                            "Assign Asset function is running ");
-                                      },
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    ContinueButton(
-                                      text: "Cancel",
-                                      ontap: () {
-                                        Navigator.pushReplacementNamed(
-                                            context, Routes.adminPage);
-
-                                        // }
-                                      },
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                  ],
                                 ),
+                              );
+                            },
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                              child: Column(
+                                children: [
+                                   const SizedBox(height: 20),
+
+                                  CustomTextFormField(
+                                    allowNumbersOnly: true,
+                                    controller: assetIdController,
+                                    height: 55,
+                                    textInputType: TextInputType.number,
+                                    width: double.infinity,
+                                    hintText: "Asset Id",
+                                    onChanged: (value) {},
+                                    prefixIcon: Icon(
+                                      Icons.laptop_chromebook,
+                                      color: AppTheme.primaryColor,
+                                    ),
+                                    validator: (value) {},
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextFormField(
+                                    allowNumbersOnly: false,
+                                    controller: userIdController,
+                                    height: 55,
+                                    width: double.infinity,
+                                    hintText: "user id",
+                                    textInputType: TextInputType.name,
+                                    onChanged: (value) {},
+                                    prefixIcon: Icon(
+                                      Icons.laptop_chromebook,
+                                      color: AppTheme.primaryColor,
+                                    ),
+                                    validator: (value) {},
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  ContinueButton(
+                                    text: "Save",
+                                    ontap: () {
+                                      // if (_loginFormKey.currentState!.validate()) {
+
+                                      // }
+                                      assignAssets();
+                                      print(
+                                          "Assign Asset function is running ");
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  ContinueButton(
+                                    text: "Cancel",
+                                    ontap: () {
+                                      Navigator.pushReplacementNamed(
+                                          context, Routes.adminPage);
+
+                                      // }
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                ],
                               ),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

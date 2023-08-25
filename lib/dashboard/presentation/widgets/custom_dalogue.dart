@@ -45,7 +45,7 @@ class CustomDialog extends StatelessWidget {
     } else if (isSucess) {
       color = Colors.green[300];
       icon = Icons.check;
-      title = "Sucess";
+      title = "Success";
       buttontxt = "Okay, cool";
       buttonStyle = greenElivatedButtonStyle;
     } else if (isWarning) {

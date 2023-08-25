@@ -552,6 +552,7 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:web_portal/dashboard/presentation/pages/un_assigned_assets.dart';
 import '../../../app_theme.dart';
 import '../../../app_url.dart';
 import '../widgets/routes.dart';
@@ -576,7 +577,7 @@ class _FirstFloorScreenState extends State<FirstFloorScreen> {
   Future<void> getFirstFloorAssets() async {
     try {
       Dio dio = Dio();
-      var url =AppUrl.baseUrl+AppUrl.firstFloorAsset;
+      var url = AppUrl.baseUrl + AppUrl.firstFloorAsset;
       // var url = 'http://192.168.4.139:3000/asset/location/Ais-F1';
       var response = await dio.get(url);
       if (response.statusCode == 200) {
@@ -608,134 +609,25 @@ class _FirstFloorScreenState extends State<FirstFloorScreen> {
     Size _size = MediaQuery.of(context).size;
 
     return Container(
-      color:Colors.grey.shade600,
-      child: Padding(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),        color: AppTheme.scaffoldBackgroundColor,
+      ),      child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomHeading(title: 'First Floor  Assets Statistics',showBackButton: true),
-              GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, Routes.addAssets);
-                  },
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                        height: MediaQuery.of(context).size.height * 0.08,
-                        width: MediaQuery.of(context).size.width * 0.12,
-                        decoration: BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceAround,
-                            children: [
-                              Text("Add Assets" ,style: TextStyle(
-                                fontSize: _size.width > 1400
-                                    ? 18
-                                    : _size.width > 1350
-                                    ? 16
-                                    : _size.width > 1300
-                                    ? 15
-                                    : _size.width > 1250
-                                    ? 14
-                                    : _size.width > 1200
-                                    ? 13
-                                    : _size.width > 1150
-                                    ? 12
-                                    : _size.width > 1100
-                                    ? 11
-                                    : _size.width > 1050
-                                    ? 10
-                                    : _size.width > 1000
-                                    ? 9
-                                    : _size.width > 950
-                                    ? 8
-                                    : _size.width > 900
-                                    ? 7
-                                    : _size.width > 850
-                                    ? 6
-                                    : _size.width > 800
-                                    ? 6
-                                    : _size.width > 750
-                                    ? 6
-                                    : _size.width > 700
-                                    ? 6
-                                    : _size.width > 650
-                                    ? 6
-                                    : _size.width > 600
-                                    ? 6
-                                    : _size.width > 550
-                                    ? 6
-                                    : _size.width > 500
-                                    ? 6
-                                    : _size.width > 450
-                                    ? 6
-                                    : _size.width > 400
-                                    ? 6
-                                    : _size.width > 350
-                                    ? 6
-                                    : 6 ,
+              const CustomHeading(
+                  title: 'First Floor  Assets Statistics',
+                  showBackButton: true),
+              OrangeButton(size: _size, title: "Add Asset", ontap: () {
 
-                              )),
-                              Icon(Icons.add,size:  _size.width > 1400
-                                  ? 17
-                                  : _size.width > 1350
-                                  ? 16
-                                  : _size.width > 1300
-                                  ? 15
-                                  : _size.width > 1250
-                                  ? 14
-                                  : _size.width > 1200
-                                  ? 14
-                                  : _size.width > 1150
-                                  ? 14
-                                  : _size.width > 1100
-                                  ? 14
-                                  : _size.width > 1050
-                                  ? 14
-                                  : _size.width > 1000
-                                  ? 14
-                                  : _size.width > 950
-                                  ? 14
-                                  : _size.width > 900
-                                  ? 14
-                                  : _size.width > 850
-                                  ? 14
-                                  : _size.width > 800
-                                  ? 14
-                                  : _size.width > 750
-                                  ? 14
-                                  : _size.width > 700
-                                  ? 14
-                                  : _size.width > 650
-                                  ? 14
-                                  : _size.width > 600
-                                  ? 14
-                                  : _size.width > 550
-                                  ? 6
-                                  : _size.width > 500
-                                  ? 6
-                                  : _size.width > 450
-                                  ? 6
-                                  : _size.width > 400
-                                  ? 6
-                                  : _size.width > 350
-                                  ? 6
-                                  : 6 ,),
-                            ],
-                          ),
-                        )),
-                  )),
+                Navigator.pushReplacementNamed(
+                    context, Routes.addAssets);
+              }),
               const SizedBox(
                 height: 10,
               ),
               Container(
-                // height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
@@ -743,7 +635,6 @@ class _FirstFloorScreenState extends State<FirstFloorScreen> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: DataTable(
-
                     columnSpacing: MediaQuery.of(context).size.width * 0.11,
                     columns: [
                       DataColumn(
@@ -795,45 +686,45 @@ class _FirstFloorScreenState extends State<FirstFloorScreen> {
                               color: AppTheme.primaryColor),
                         ),
                       ),
-
                     ],
-                    rows: assets.map((asset){
-                      return DataRow(
-                        cells: [
-                          DataCell(
-                            Text(
-                              asset['serial_no']?.toString() ?? 'N/A',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                          DataCell(
+                    rows: assets.map(
+                      (asset) {
+                        return DataRow(
+                          cells: [
+                            DataCell(
                               Text(
-                                asset['asset_id']?.toString() ?? 'N/A',
+                                asset['serial_no']?.toString() ?? 'N/A',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              showEditIcon: true),
-                          DataCell(
-                            Text(
-                              asset['asset_name']?.toString() ?? 'N/A',
-                              style: TextStyle(color: Colors.white),
                             ),
-                          ),
-                          DataCell(
-                            Text(asset["type_name"]?.toString() ?? 'N/A',
-                              style: TextStyle(color: Colors.white),
+                            DataCell(
+                                Text(
+                                  asset['asset_id']?.toString() ?? 'N/A',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                showEditIcon: true),
+                            DataCell(
+                              Text(
+                                asset['asset_name']?.toString() ?? 'N/A',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
-
-                          ),
-                          DataCell(
-                            Text(
-                              asset['floor_location']?.toString() ?? 'N/A',
-                              style: TextStyle(color: Colors.white),
+                            DataCell(
+                              Text(
+                                asset["type_name"]?.toString() ?? 'N/A',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
-                          ),
-
-                        ],
-                      );
-                    },).toList(),
+                            DataCell(
+                              Text(
+                                asset['floor_location']?.toString() ?? 'N/A',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ).toList(),
                   ),
                 ),
               ),
